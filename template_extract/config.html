@@ -22,85 +22,122 @@
             </div>
             <div class="app-content flex-column-fluid py-6">
                 <div class="container">
-                    <div class="row g-5">
-                        <!-- Evolution API -->
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header"><h3 class="card-title">Evolution API (WhatsApp)</h3></div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">URL da API</label>
-                                        <input type="text" class="form-control" id="evolution_api_url" placeholder="https://sua-evolution.com">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">API Key</label>
-                                        <input type="password" class="form-control" id="evolution_api_key">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Nome da Instância</label>
-                                        <input type="text" class="form-control" id="evolution_instance" placeholder="default">
-                                    </div>
-                                    <div class="alert alert-info">Webhook URL: <code id="webhook-url"></code></div>
+                    <!-- Evolution API Config -->
+                    <div class="card mb-5">
+                        <div class="card-header"><h3 class="card-title">Evolution API (WhatsApp)</h3></div>
+                        <div class="card-body">
+                            <div class="row mb-5">
+                                <div class="col-md-5">
+                                    <label class="form-label">URL da API</label>
+                                    <input type="text" class="form-control" id="evolution_api_url">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">API Key Global</label>
+                                    <input type="password" class="form-control" id="evolution_api_key">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100" onclick="saveEvolutionConfig()">Salvar</button>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Meta CAPI -->
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header"><h3 class="card-title">Meta Conversions API</h3></div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Pixel ID</label>
-                                        <input type="text" class="form-control" id="meta_pixel_id">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Access Token</label>
-                                        <input type="password" class="form-control" id="meta_capi_token">
+                            <div class="alert alert-info mb-5">Webhook: <code id="webhook-url"></code></div>
+                            
+                            <!-- Instâncias -->
+                            <div class="border-top pt-5">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="mb-0">Instâncias WhatsApp</h4>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" class="form-control form-control-sm w-200px" id="new-instance-name" placeholder="Nome da instância">
+                                        <button class="btn btn-sm btn-success" onclick="createInstance()">+ Criar</button>
+                                        <button class="btn btn-sm btn-light" onclick="loadInstances()">Atualizar</button>
                                     </div>
                                 </div>
+                                <div id="instances-list"></div>
                             </div>
                         </div>
-                        <!-- Prompt -->
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header"><h3 class="card-title">Prompt do Agente IA</h3></div>
-                                <div class="card-body">
-                                    <textarea class="form-control" id="system_prompt" rows="6"></textarea>
+                    </div>
+
+                    <!-- QR Code Modal -->
+                    <div class="modal fade" id="qrModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Conectar WhatsApp</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- Qualificação -->
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header"><h3 class="card-title">Regras de Qualificação</h3></div>
-                                <div class="card-body">
-                                    <div class="mb-3">
-                                        <label class="form-label">Score mínimo para qualificar</label>
-                                        <input type="number" class="form-control w-auto" id="min_score" value="50">
-                                    </div>
-                                    <label class="form-label">Critérios (chave | palavra-chave | peso)</label>
-                                    <div id="criteria-list"></div>
+                                <div class="modal-body text-center" id="qr-container">
+                                    <div class="spinner-border text-primary"></div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-light" data-bs-dismiss="modal">Fechar</button>
+                                    <button class="btn btn-primary" onclick="refreshQR()">Atualizar QR</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-5">
-                        <button class="btn btn-primary btn-lg" onclick="saveAll()">Salvar Configurações</button>
+
+                    <!-- Meta CAPI -->
+                    <div class="card mb-5">
+                        <div class="card-header"><h3 class="card-title">Meta Conversions API</h3></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label class="form-label">Pixel ID</label>
+                                    <input type="text" class="form-control" id="meta_pixel_id">
+                                </div>
+                                <div class="col-md-5">
+                                    <label class="form-label">Access Token</label>
+                                    <input type="password" class="form-control" id="meta_capi_token">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button class="btn btn-primary w-100" onclick="saveMetaConfig()">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt IA -->
+                    <div class="card mb-5">
+                        <div class="card-header"><h3 class="card-title">Prompt do Agente IA</h3></div>
+                        <div class="card-body">
+                            <textarea class="form-control mb-3" id="system_prompt" rows="5"></textarea>
+                            <button class="btn btn-primary" onclick="savePrompt()">Salvar Prompt</button>
+                        </div>
+                    </div>
+
+                    <!-- Qualificação -->
+                    <div class="card">
+                        <div class="card-header"><h3 class="card-title">Regras de Qualificação</h3></div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label class="form-label">Score mínimo para qualificar</label>
+                                <input type="number" class="form-control w-150px" id="min_score" value="50">
+                            </div>
+                            <label class="form-label">Critérios</label>
+                            <div id="criteria-list"></div>
+                            <button class="btn btn-primary mt-3" onclick="saveQualification()">Salvar Regras</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script src="assets/js/scripts.bundle.js"></script>
     <script>
         const API = '/api';
-        document.getElementById('webhook-url').textContent = window.location.origin + '/api/webhook/evolution';
+        let currentInstance = null;
+        let qrModal = null;
         
+        document.addEventListener('DOMContentLoaded', () => {
+            qrModal = new bootstrap.Modal(document.getElementById('qrModal'));
+            document.getElementById('webhook-url').textContent = window.location.origin + '/api/webhook/evolution';
+            loadSettings();
+        });
+
         async function loadSettings() {
             const data = await (await fetch(`${API}/settings`)).json();
             document.getElementById('evolution_api_url').value = data.evolution_api_url || '';
             document.getElementById('evolution_api_key').value = data.evolution_api_key || '';
-            document.getElementById('evolution_instance').value = data.evolution_instance || '';
             document.getElementById('meta_pixel_id').value = data.meta_pixel_id || '';
             document.getElementById('meta_capi_token').value = data.meta_capi_token || '';
             document.getElementById('system_prompt').value = data.system_prompt || '';
@@ -114,36 +151,135 @@
                     <input type="number" class="form-control w-100px" value="${c.weight}" placeholder="Peso">
                 </div>
             `).join('');
+            
+            if (data.evolution_api_url && data.evolution_api_key) loadInstances();
         }
-        
-        async function saveAll() {
-            const data = {
-                evolution_api_url: document.getElementById('evolution_api_url').value || null,
-                evolution_api_key: document.getElementById('evolution_api_key').value || null,
-                evolution_instance: document.getElementById('evolution_instance').value || null,
-                meta_pixel_id: document.getElementById('meta_pixel_id').value || null,
-                meta_capi_token: document.getElementById('meta_capi_token').value || null,
-                system_prompt: document.getElementById('system_prompt').value || null
-            };
-            Object.keys(data).forEach(k => { if(!data[k]) delete data[k]; });
-            
-            await fetch(`${API}/settings`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
-            
-            // Qualificação
+
+        async function saveEvolutionConfig() {
+            await fetch(`${API}/settings`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    evolution_api_url: document.getElementById('evolution_api_url').value,
+                    evolution_api_key: document.getElementById('evolution_api_key').value
+                })
+            });
+            alert('Configuração Evolution salva!');
+            loadInstances();
+        }
+
+        async function loadInstances() {
+            const el = document.getElementById('instances-list');
+            try {
+                const data = await (await fetch(`${API}/evolution/instances`)).json();
+                if (!data || !Array.isArray(data)) { el.innerHTML = '<div class="text-muted">Configure a API primeiro</div>'; return; }
+                if (data.length === 0) { el.innerHTML = '<div class="text-muted">Nenhuma instância criada</div>'; return; }
+                
+                el.innerHTML = `<div class="table-responsive"><table class="table table-row-bordered">
+                    <thead><tr><th>Nome</th><th>Status</th><th>Número</th><th>Ações</th></tr></thead>
+                    <tbody>${data.map(i => {
+                        const state = i.instance?.state || i.state || 'unknown';
+                        const name = i.instance?.instanceName || i.instanceName || i.name;
+                        const number = i.instance?.owner || '';
+                        const badge = state === 'open' ? 'success' : state === 'connecting' ? 'warning' : 'secondary';
+                        return `<tr>
+                            <td class="fw-bold">${name}</td>
+                            <td><span class="badge badge-${badge}">${state}</span></td>
+                            <td>${number}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1" onclick="showQR('${name}')">QR Code</button>
+                                <button class="btn btn-sm btn-info me-1" onclick="setWebhook('${name}')">Webhook</button>
+                                <button class="btn btn-sm btn-warning me-1" onclick="checkStatus('${name}')">Status</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteInstance('${name}')">Excluir</button>
+                            </td>
+                        </tr>`;
+                    }).join('')}</tbody>
+                </table></div>`;
+            } catch(e) { el.innerHTML = '<div class="text-danger">Erro ao carregar instâncias</div>'; }
+        }
+
+        async function createInstance() {
+            const name = document.getElementById('new-instance-name').value.trim();
+            if (!name) return alert('Digite um nome');
+            await fetch(`${API}/evolution/instances?instance_name=${encodeURIComponent(name)}`, {method: 'POST'});
+            document.getElementById('new-instance-name').value = '';
+            loadInstances();
+        }
+
+        async function showQR(name) {
+            currentInstance = name;
+            qrModal.show();
+            refreshQR();
+        }
+
+        async function refreshQR() {
+            const el = document.getElementById('qr-container');
+            el.innerHTML = '<div class="spinner-border text-primary"></div>';
+            try {
+                const data = await (await fetch(`${API}/evolution/instances/${currentInstance}/qrcode`)).json();
+                if (data.base64 || data.qrcode?.base64) {
+                    const qr = data.base64 || data.qrcode.base64;
+                    el.innerHTML = `<img src="${qr.startsWith('data:') ? qr : 'data:image/png;base64,' + qr}" class="img-fluid" style="max-width:300px">`;
+                } else if (data.instance?.state === 'open') {
+                    el.innerHTML = '<div class="text-success fs-3">✓ Já conectado!</div>';
+                } else {
+                    el.innerHTML = '<div class="text-muted">Aguardando QR Code...</div>';
+                }
+            } catch(e) { el.innerHTML = '<div class="text-danger">Erro ao gerar QR</div>'; }
+        }
+
+        async function setWebhook(name) {
+            const url = window.location.origin + '/api/webhook/evolution';
+            await fetch(`${API}/evolution/instances/${name}/webhook?webhook_url=${encodeURIComponent(url)}`, {method: 'POST'});
+            alert('Webhook configurado!');
+        }
+
+        async function checkStatus(name) {
+            const data = await (await fetch(`${API}/evolution/instances/${name}/status`)).json();
+            alert(`Status: ${data.instance?.state || data.state || JSON.stringify(data)}`);
+            loadInstances();
+        }
+
+        async function deleteInstance(name) {
+            if (!confirm(`Excluir instância ${name}?`)) return;
+            await fetch(`${API}/evolution/instances/${name}`, {method: 'DELETE'});
+            loadInstances();
+        }
+
+        async function saveMetaConfig() {
+            await fetch(`${API}/settings`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    meta_pixel_id: document.getElementById('meta_pixel_id').value || null,
+                    meta_capi_token: document.getElementById('meta_capi_token').value || null
+                })
+            });
+            alert('Configuração Meta salva!');
+        }
+
+        async function savePrompt() {
+            await fetch(`${API}/settings`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({system_prompt: document.getElementById('system_prompt').value})
+            });
+            alert('Prompt salvo!');
+        }
+
+        async function saveQualification() {
             const criteria = [];
             document.querySelectorAll('.criteria-row').forEach(row => {
                 const inputs = row.querySelectorAll('input');
-                criteria.push({key:inputs[0].value, question:inputs[1].value, weight:parseInt(inputs[2].value)||10});
+                criteria.push({key: inputs[0].value, question: inputs[1].value, weight: parseInt(inputs[2].value) || 10});
             });
             await fetch(`${API}/settings/qualification-rules`, {
-                method:'PUT', headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({min_score_qualified:parseInt(document.getElementById('min_score').value)||50, criteria})
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({min_score_qualified: parseInt(document.getElementById('min_score').value) || 50, criteria})
             });
-            
-            alert('Configurações salvas!');
+            alert('Regras salvas!');
         }
-        
-        loadSettings();
     </script>
 </body>
 </html>

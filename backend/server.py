@@ -30,13 +30,14 @@ templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 app.mount("/assets", StaticFiles(directory=str(TEMPLATE_DIR / "assets")), name="assets")
 
 # Importa e configura rotas
-from routes import webhook, leads, chat, settings, analytics
+from routes import webhook, leads, chat, settings, analytics, evolution
 
 webhook.set_db(db)
 leads.set_db(db)
 chat.set_db(db)
 settings.set_db(db)
 analytics.set_db(db)
+evolution.set_db(db)
 
 # Registra routers com prefixo /api
 app.include_router(webhook.router, prefix="/api")
@@ -44,6 +45,7 @@ app.include_router(leads.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(settings.router, prefix="/api")
 app.include_router(analytics.router, prefix="/api")
+app.include_router(evolution.router, prefix="/api")
 
 # CORS
 app.add_middleware(
