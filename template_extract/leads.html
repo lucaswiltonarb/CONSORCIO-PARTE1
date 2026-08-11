@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROMPT MESTRE - Leads</title>
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body id="kt_app_body" class="app-default">
+    <div class="d-flex flex-column flex-root app-root">
+        <div class="app-page flex-column flex-column-fluid">
+            <div class="app-header py-3 py-lg-6 bg-primary">
+                <div class="container d-flex align-items-center justify-content-between">
+                    <h1 class="text-white fs-2 mb-0">PROMPT MESTRE</h1>
+                    <div>
+                        <a href="/" class="btn btn-light-primary btn-sm me-2">Dashboard</a>
+                        <a href="/chat" class="btn btn-light-primary btn-sm me-2">Chat</a>
+                        <a href="/config" class="btn btn-light-primary btn-sm">Config</a>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content flex-column-fluid py-6">
+                <div class="container">
+                    <!-- Filtros -->
+                    <div class="card mb-5">
+                        <div class="card-body py-4">
+                            <div class="d-flex flex-wrap gap-3">
+                                <select class="form-select w-auto" id="filter-stage" onchange="loadLeads()">
+                                    <option value="">Todos Estágios</option>
+                                    <option value="new">Novo</option>
+                                    <option value="qualified">Qualificado</option>
+                                    <option value="negotiation">Negociação</option>
+                                    <option value="documentation">Documentação</option>
+                                    <option value="confirmed">Confirmado</option>
+                                    <option value="lost">Perdido</option>
+                                </select>
+                                <select class="form-select w-auto" id="filter-temp" onchange="loadLeads()">
+                                    <option value="">Todas Temperaturas</option>
+                                    <option value="cold">Frio</option>
+                                    <option value="warm">Morno</option>
+                                    <option value="hot">Quente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabela -->
+                    <div class="card">
+                        <div class="card-header border-0 pt-6">
+                            <h3 class="card-title">Leads (<span id="total-count">0</span>)</h3>
+                        </div>
+                        <div class="card-body pt-0">
+                            <div class="table-responsive">
+                                <table class="table table-row-dashed table-row-gray-300 align-middle">
+                                    <thead>
+                                        <tr class="fw-bold text-muted">
+                                            <th>Contato</th>
+                                            <th>Estágio</th>
+                                            <th>Temp</th>
+                                            <th>Score</th>
+                                            <th>Atendimento</th>
+                                            <th>Atualizado</th>
+                                            <th class="text-end">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leads-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script>
+        const API = '/api';
+        const STAGES = {new:'Novo',in_progress:'Em Andamento',qualified:'Qualificado',negotiation:'Negociação',documentation:'Documentação',confirmed:'Confirmado',lost:'Perdido'};
+        const COLORS = {new:'secondary',in_progress:'info',qualified:'primary',negotiation:'warning',documentation:'dark',confirmed:'success',lost:'danger'};
+        
+        async function loadLeads() {
+            const stage = document.getElementById('filter-stage').value;
+            const temp = document.getElementById('filter-temp').value;
+            let url = `${API}/leads?limit=100`;
+            if (stage) url += `&stage=${stage}`;
+            if (temp) url += `&temperature=${temp}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            document.getElementById('total-count').textContent = data.total;
+            const tbody = document.getElementById('leads-tbody');
+            if (!data.leads?.length) { tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-5">Nenhum lead</td></tr>'; return; }
+            tbody.innerHTML = data.leads.map(l => `
+                <tr>
+                    <td><div class="fw-bold">${l.name||'Sem nome'}</div><div class="text-muted fs-7">${l.phone}</div></td>
+                    <td><span class="badge badge-light-${COLORS[l.stage]}">${STAGES[l.stage]}</span></td>
+                    <td><span class="badge badge-${l.temperature==='hot'?'danger':l.temperature==='warm'?'warning':'secondary'}">${l.temperature}</span></td>
+                    <td>${l.score} pts</td>
+                    <td>${l.human_takeover?'<span class="badge badge-warning">Humano</span>':'<span class="badge badge-info">IA</span>'}</td>
+                    <td class="text-muted fs-7">${new Date(l.updated_at).toLocaleDateString('pt-BR')}</td>
+                    <td class="text-end">
+                        <a href="/chat" class="btn btn-sm btn-light me-1">Chat</a>
+                        <button class="btn btn-sm btn-success" onclick="confirmSale('${l.id}')">✓ Venda</button>
+                        <button class="btn btn-sm btn-danger" onclick="markLost('${l.id}')">✗</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        async function confirmSale(id) {
+            if (!confirm('CONFIRMAR VENDA?')) return;
+            await fetch(`${API}/leads/${id}/confirm-sale`, {method:'POST'});
+            alert('Venda confirmada!'); loadLeads();
+        }
+        
+        async function markLost(id) {
+            if (!confirm('Marcar como perdido?')) return;
+            await fetch(`${API}/leads/${id}/mark-lost`, {method:'POST'});
+            loadLeads();
+        }
+        
+        loadLeads();
+    </script>
+</body>
+</html>

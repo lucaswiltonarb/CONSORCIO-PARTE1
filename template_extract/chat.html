@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROMPT MESTRE - Chat</title>
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body id="kt_app_body" class="app-default">
+    <div class="d-flex flex-column flex-root app-root">
+        <div class="app-page flex-column flex-column-fluid">
+            <!-- Header -->
+            <div class="app-header py-3 py-lg-6 bg-primary">
+                <div class="container d-flex align-items-center justify-content-between">
+                    <h1 class="text-white fs-2 mb-0">PROMPT MESTRE</h1>
+                    <div>
+                        <a href="/" class="btn btn-light-primary btn-sm me-2">Dashboard</a>
+                        <a href="/leads" class="btn btn-light-primary btn-sm me-2">Leads</a>
+                        <a href="/config" class="btn btn-light-primary btn-sm">Config</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Content -->
+            <div class="app-content flex-column-fluid py-6">
+                <div class="container">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="d-flex flex-column flex-lg-row">
+                                <!-- Lista de Contatos -->
+                                <div class="flex-column flex-lg-row-auto w-100 w-lg-300px border-end">
+                                    <div class="card-header border-0 pt-6">
+                                        <h3 class="card-title">Conversas</h3>
+                                    </div>
+                                    <div class="card-body pt-0" id="contacts-list" style="max-height:500px;overflow-y:auto;">
+                                        <div class="text-center text-muted py-5">Carregando...</div>
+                                    </div>
+                                </div>
+                                <!-- Chat -->
+                                <div class="flex-lg-row-fluid">
+                                    <div class="card-header border-0 pt-6">
+                                        <div class="d-flex justify-content-between align-items-center w-100">
+                                            <h3 class="card-title" id="chat-title">Selecione uma conversa</h3>
+                                            <div>
+                                                <button class="btn btn-sm btn-warning me-2" onclick="takeoverChat()">Assumir</button>
+                                                <button class="btn btn-sm btn-secondary" onclick="releaseChat()">Devolver p/ IA</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body" id="messages-container" style="height:400px;overflow-y:auto;background:#f5f5f5;">
+                                        <div class="text-center text-muted py-10">Selecione um contato</div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-flex">
+                                            <input type="text" id="msg-input" class="form-control me-3" placeholder="Digite sua mensagem...">
+                                            <button class="btn btn-primary" onclick="sendMessage()">Enviar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script>
+        const API = '/api';
+        let currentLead = null;
+        
+        async function loadChats() {
+            const res = await fetch(`${API}/chat/active`);
+            const data = await res.json();
+            const el = document.getElementById('contacts-list');
+            if (!data.chats?.length) { el.innerHTML = '<div class="text-muted text-center py-5">Nenhuma conversa</div>'; return; }
+            el.innerHTML = data.chats.map(c => `
+                <div class="d-flex align-items-center p-3 border-bottom cursor-pointer hover-bg-light" onclick="selectChat('${c.id}','${c.name||c.phone}')">
+                    <div class="symbol symbol-45px symbol-circle me-3">
+                        <span class="symbol-label bg-light-primary text-primary fs-5">${(c.name||c.phone||'?')[0].toUpperCase()}</span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${c.name||c.phone}</div>
+                        <div class="text-muted fs-7">${c.stage} | ${c.temperature}</div>
+                    </div>
+                    ${c.human_takeover ? '<span class="badge badge-warning">Humano</span>' : ''}
+                </div>
+            `).join('');
+        }
+        
+        async function selectChat(id, name) {
+            currentLead = id;
+            document.getElementById('chat-title').textContent = name;
+            await loadMessages();
+        }
+        
+        async function loadMessages() {
+            if (!currentLead) return;
+            const res = await fetch(`${API}/leads/${currentLead}/messages`);
+            const data = await res.json();
+            const el = document.getElementById('messages-container');
+            if (!data.messages?.length) { el.innerHTML = '<div class="text-muted text-center py-10">Sem mensagens</div>'; return; }
+            el.innerHTML = data.messages.map(m => {
+                const isLead = m.role === 'lead';
+                const bg = isLead ? 'bg-light' : (m.role === 'human' ? 'bg-success text-white' : 'bg-primary text-white');
+                const align = isLead ? 'justify-content-start' : 'justify-content-end';
+                const label = isLead ? '' : (m.role === 'human' ? '(Você)' : '(IA)');
+                return `<div class="d-flex ${align} mb-3"><div class="p-3 rounded ${bg}" style="max-width:70%">${m.content} <small class="opacity-75">${label}</small></div></div>`;
+            }).join('');
+            el.scrollTop = el.scrollHeight;
+        }
+        
+        async function sendMessage() {
+            if (!currentLead) return alert('Selecione uma conversa');
+            const input = document.getElementById('msg-input');
+            const content = input.value.trim();
+            if (!content) return;
+            await fetch(`${API}/chat/send?lead_id=${currentLead}&content=${encodeURIComponent(content)}`, {method:'POST'});
+            input.value = '';
+            loadMessages();
+        }
+        
+        async function takeoverChat() {
+            if (!currentLead) return;
+            await fetch(`${API}/leads/${currentLead}/takeover`, {method:'POST'});
+            alert('Você assumiu o controle'); loadChats();
+        }
+        
+        async function releaseChat() {
+            if (!currentLead) return;
+            await fetch(`${API}/leads/${currentLead}/release`, {method:'POST'});
+            alert('Devolvido para IA'); loadChats();
+        }
+        
+        document.getElementById('msg-input').addEventListener('keypress', e => { if(e.key==='Enter') sendMessage(); });
+        loadChats();
+        setInterval(loadChats, 15000);
+        setInterval(() => { if(currentLead) loadMessages(); }, 5000);
+    </script>
+</body>
+</html>

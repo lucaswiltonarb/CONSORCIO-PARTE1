@@ -62,33 +62,19 @@ logger = logging.getLogger(__name__)
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    """Página inicial - Dashboard"""
-    return templates.TemplateResponse("dashboards/call-center.html", {"request": request})
+    return templates.TemplateResponse("dashboard.html", {"request": request})
 
 @app.get("/chat", response_class=HTMLResponse)
 async def chat_page(request: Request):
-    """Interface de Chat"""
-    return templates.TemplateResponse("apps/chat/private.html", {"request": request})
+    return templates.TemplateResponse("chat.html", {"request": request})
 
 @app.get("/leads", response_class=HTMLResponse)
 async def leads_page(request: Request):
-    """Gestão de Leads"""
-    return templates.TemplateResponse("apps/customers/listing.html", {"request": request})
+    return templates.TemplateResponse("leads.html", {"request": request})
 
-@app.get("/analytics", response_class=HTMLResponse)
-async def analytics_page(request: Request):
-    """Dashboard Analytics"""
-    return templates.TemplateResponse("dashboards/marketing.html", {"request": request})
-
-@app.get("/settings", response_class=HTMLResponse)
-async def settings_page(request: Request):
-    """Configurações"""
-    return templates.TemplateResponse("account/settings.html", {"request": request})
-
-@app.get("/login", response_class=HTMLResponse)
-async def login_page(request: Request):
-    """Login"""
-    return templates.TemplateResponse("authentication/layouts/corporate/sign-in.html", {"request": request})
+@app.get("/config", response_class=HTMLResponse)
+async def config_page(request: Request):
+    return templates.TemplateResponse("config.html", {"request": request})
 
 # Health check
 @app.get("/api/health")

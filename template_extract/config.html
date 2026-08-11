@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROMPT MESTRE - Configurações</title>
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body id="kt_app_body" class="app-default">
+    <div class="d-flex flex-column flex-root app-root">
+        <div class="app-page flex-column flex-column-fluid">
+            <div class="app-header py-3 py-lg-6 bg-primary">
+                <div class="container d-flex align-items-center justify-content-between">
+                    <h1 class="text-white fs-2 mb-0">PROMPT MESTRE</h1>
+                    <div>
+                        <a href="/" class="btn btn-light-primary btn-sm me-2">Dashboard</a>
+                        <a href="/chat" class="btn btn-light-primary btn-sm me-2">Chat</a>
+                        <a href="/leads" class="btn btn-light-primary btn-sm">Leads</a>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content flex-column-fluid py-6">
+                <div class="container">
+                    <div class="row g-5">
+                        <!-- Evolution API -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Evolution API (WhatsApp)</h3></div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">URL da API</label>
+                                        <input type="text" class="form-control" id="evolution_api_url" placeholder="https://sua-evolution.com">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">API Key</label>
+                                        <input type="password" class="form-control" id="evolution_api_key">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nome da Instância</label>
+                                        <input type="text" class="form-control" id="evolution_instance" placeholder="default">
+                                    </div>
+                                    <div class="alert alert-info">Webhook URL: <code id="webhook-url"></code></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Meta CAPI -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Meta Conversions API</h3></div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Pixel ID</label>
+                                        <input type="text" class="form-control" id="meta_pixel_id">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Access Token</label>
+                                        <input type="password" class="form-control" id="meta_capi_token">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Prompt -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Prompt do Agente IA</h3></div>
+                                <div class="card-body">
+                                    <textarea class="form-control" id="system_prompt" rows="6"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Qualificação -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Regras de Qualificação</h3></div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Score mínimo para qualificar</label>
+                                        <input type="number" class="form-control w-auto" id="min_score" value="50">
+                                    </div>
+                                    <label class="form-label">Critérios (chave | palavra-chave | peso)</label>
+                                    <div id="criteria-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <button class="btn btn-primary btn-lg" onclick="saveAll()">Salvar Configurações</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script>
+        const API = '/api';
+        document.getElementById('webhook-url').textContent = window.location.origin + '/api/webhook/evolution';
+        
+        async function loadSettings() {
+            const data = await (await fetch(`${API}/settings`)).json();
+            document.getElementById('evolution_api_url').value = data.evolution_api_url || '';
+            document.getElementById('evolution_api_key').value = data.evolution_api_key || '';
+            document.getElementById('evolution_instance').value = data.evolution_instance || '';
+            document.getElementById('meta_pixel_id').value = data.meta_pixel_id || '';
+            document.getElementById('meta_capi_token').value = data.meta_capi_token || '';
+            document.getElementById('system_prompt').value = data.system_prompt || '';
+            document.getElementById('min_score').value = data.qualification_rules?.min_score_qualified || 50;
+            
+            const criteria = data.qualification_rules?.criteria || [];
+            document.getElementById('criteria-list').innerHTML = criteria.map(c => `
+                <div class="d-flex gap-2 mb-2 criteria-row">
+                    <input type="text" class="form-control" value="${c.key}" placeholder="Chave">
+                    <input type="text" class="form-control" value="${c.question}" placeholder="Palavra-chave">
+                    <input type="number" class="form-control w-100px" value="${c.weight}" placeholder="Peso">
+                </div>
+            `).join('');
+        }
+        
+        async function saveAll() {
+            const data = {
+                evolution_api_url: document.getElementById('evolution_api_url').value || null,
+                evolution_api_key: document.getElementById('evolution_api_key').value || null,
+                evolution_instance: document.getElementById('evolution_instance').value || null,
+                meta_pixel_id: document.getElementById('meta_pixel_id').value || null,
+                meta_capi_token: document.getElementById('meta_capi_token').value || null,
+                system_prompt: document.getElementById('system_prompt').value || null
+            };
+            Object.keys(data).forEach(k => { if(!data[k]) delete data[k]; });
+            
+            await fetch(`${API}/settings`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+            
+            // Qualificação
+            const criteria = [];
+            document.querySelectorAll('.criteria-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                criteria.push({key:inputs[0].value, question:inputs[1].value, weight:parseInt(inputs[2].value)||10});
+            });
+            await fetch(`${API}/settings/qualification-rules`, {
+                method:'PUT', headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({min_score_qualified:parseInt(document.getElementById('min_score').value)||50, criteria})
+            });
+            
+            alert('Configurações salvas!');
+        }
+        
+        loadSettings();
+    </script>
+</body>
+</html>

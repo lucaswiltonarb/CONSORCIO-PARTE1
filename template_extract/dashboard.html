@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROMPT MESTRE - Dashboard</title>
+    <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body id="kt_app_body" class="app-default">
+    <div class="d-flex flex-column flex-root app-root">
+        <div class="app-page flex-column flex-column-fluid">
+            <div class="app-header py-3 py-lg-6 bg-primary">
+                <div class="container d-flex align-items-center justify-content-between">
+                    <h1 class="text-white fs-2 mb-0">PROMPT MESTRE</h1>
+                    <div>
+                        <a href="/chat" class="btn btn-light-primary btn-sm me-2">Chat</a>
+                        <a href="/leads" class="btn btn-light-primary btn-sm me-2">Leads</a>
+                        <a href="/config" class="btn btn-light-primary btn-sm">Config</a>
+                    </div>
+                </div>
+            </div>
+            <div class="app-content flex-column-fluid py-6">
+                <div class="container">
+                    <!-- Cards -->
+                    <div class="row g-5 mb-5">
+                        <div class="col-md-3">
+                            <div class="card bg-light-primary">
+                                <div class="card-body">
+                                    <div class="fs-2 fw-bold text-primary" id="total-leads">0</div>
+                                    <div class="text-muted">Total Leads</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-danger">
+                                <div class="card-body">
+                                    <div class="fs-2 fw-bold text-danger" id="hot-leads">0</div>
+                                    <div class="text-muted">Leads Quentes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-success">
+                                <div class="card-body">
+                                    <div class="fs-2 fw-bold text-success" id="confirmed">0</div>
+                                    <div class="text-muted">Vendas Confirmadas</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-light-warning">
+                                <div class="card-body">
+                                    <div class="fs-2 fw-bold text-warning" id="conversion">0%</div>
+                                    <div class="text-muted">Taxa Conversão</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Funil -->
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Funil de Vendas</h3></div>
+                                <div class="card-body" id="funnel-container"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header"><h3 class="card-title">Por Origem</h3></div>
+                                <div class="card-body">
+                                    <table class="table table-sm">
+                                        <thead><tr><th>Origem</th><th>Leads</th><th>Vendas</th><th>Conv.</th></tr></thead>
+                                        <tbody id="origins-tbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/plugins/global/plugins.bundle.js"></script>
+    <script>
+        const API = '/api';
+        const LABELS = {new:'Novos',in_progress:'Em Andamento',qualified:'Qualificados',negotiation:'Negociação',documentation:'Documentação',confirmed:'Confirmados'};
+        
+        async function loadDashboard() {
+            // Overview
+            const ov = await (await fetch(`${API}/analytics/overview`)).json();
+            document.getElementById('total-leads').textContent = ov.total_leads;
+            document.getElementById('hot-leads').textContent = ov.by_temperature?.hot || 0;
+            document.getElementById('confirmed').textContent = ov.confirmed_sales;
+            document.getElementById('conversion').textContent = ov.conversion_rate + '%';
+            
+            // Funil
+            const fn = await (await fetch(`${API}/analytics/funnel`)).json();
+            const max = Math.max(...fn.funnel.map(f=>f.count),1);
+            document.getElementById('funnel-container').innerHTML = fn.funnel.map(f => `
+                <div class="d-flex align-items-center mb-3">
+                    <div class="w-100px text-muted">${LABELS[f.stage]||f.stage}</div>
+                    <div class="flex-grow-1"><div class="progress h-25px"><div class="progress-bar bg-primary" style="width:${(f.count/max)*100}%">${f.count}</div></div></div>
+                </div>
+            `).join('');
+            
+            // Origens
+            const og = await (await fetch(`${API}/analytics/origin`)).json();
+            document.getElementById('origins-tbody').innerHTML = (og.origins||[]).map(o => `
+                <tr><td>${o.origin||'Direto'}</td><td>${o.total}</td><td>${o.confirmed}</td><td>${o.conversion_rate}%</td></tr>
+            `).join('') || '<tr><td colspan="4" class="text-muted">Sem dados</td></tr>';
+        }
+        
+        loadDashboard();
+        setInterval(loadDashboard, 60000);
+    </script>
+</body>
+</html>
