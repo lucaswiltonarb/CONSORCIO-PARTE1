@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="usuarios-page">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Novo atendente</h3></div>
+                    <div class="card-body">
+                        <form id="user-form">
+                            <div class="mb-4"><label class="form-label">Nome</label>
+                                <input type="text" id="nome" data-testid="user-name" class="form-control" required></div>
+                            <div class="mb-4"><label class="form-label">E-mail</label>
+                                <input type="email" id="email" data-testid="user-email" class="form-control" required></div>
+                            <div class="mb-4"><label class="form-label">Senha</label>
+                                <input type="text" id="senha" data-testid="user-password" class="form-control" required></div>
+                            <div class="mb-4"><label class="form-label">Perfil</label>
+                                <select id="role" data-testid="user-role" class="form-select">
+                                    <option value="attendant">Atendente</option>
+                                    <option value="admin">Administrador</option>
+                                </select></div>
+                            <button class="btn btn-primary" data-testid="user-submit">Criar usuário</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Equipe</h3></div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-row-dashed align-middle">
+                            <thead><tr class="fw-bold text-muted"><th>Nome</th><th>E-mail</th><th>Perfil</th><th>Status</th><th class="text-end">Ações</th></tr></thead>
+                            <tbody id="users-tbody" data-testid="users-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        async function carregar() {
+            try {
+                const data = await api('/auth/users');
+                document.getElementById('users-tbody').innerHTML = data.users.map(u => `
+                    <tr>
+                        <td class="fw-bold">${u.name || '—'}</td>
+                        <td>${u.email}</td>
+                        <td><span class="badge badge-light-${u.role === 'admin' ? 'primary' : 'info'}">${u.role === 'admin' ? 'Admin' : 'Atendente'}</span></td>
+                        <td><span class="badge badge-light-${u.active === false ? 'danger' : 'success'}">${u.active === false ? 'Inativo' : 'Ativo'}</span></td>
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-light-warning me-2" onclick="senha('${u.id}')">Senha</button>
+                            <button class="btn btn-sm btn-light me-2" onclick="alternar('${u.id}')">${u.active === false ? 'Ativar' : 'Desativar'}</button>
+                            <button class="btn btn-sm btn-light-danger" onclick="remover('${u.id}')">Excluir</button>
+                        </td>
+                    </tr>`).join('');
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function senha(id) {
+            const nova = prompt('Nova senha:');
+            if (!nova) return;
+            await api(`/auth/users/${id}/password`, { method: 'PATCH', body: JSON.stringify({ password: nova }) });
+            toast('Senha atualizada');
+        }
+        async function alternar(id) { await api(`/auth/users/${id}/toggle`, { method: 'PATCH' }); carregar(); }
+        async function remover(id) {
+            if (!confirm('Excluir este usuário?')) return;
+            try { await api(`/auth/users/${id}`, { method: 'DELETE' }); carregar(); }
+            catch (e) { toast(e.message, 'error'); }
+        }
+
+        document.getElementById('user-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api('/auth/users', { method: 'POST', body: JSON.stringify({
+                    name: document.getElementById('nome').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('senha').value,
+                    role: document.getElementById('role').value
+                })});
+                toast('Usuário criado');
+                document.getElementById('user-form').reset();
+                carregar();
+            } catch (err) { toast(err.message, 'error'); }
+        });
+
+        if (guard()) { renderNav('/usuarios.html'); carregar(); }
+    </script>
+</body>
+</html>

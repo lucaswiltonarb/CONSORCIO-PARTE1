@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treinamento IA - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="treinamento-page">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Importar conversas de especialistas</h3></div>
+                    <div class="card-body">
+                        <div class="alert alert-primary fs-8">
+                            Exporte a conversa no WhatsApp (Conversa → Mais → Exportar conversa → Sem mídia) e envie o arquivo .txt aqui.
+                            A IA analisa o histórico e cria um playbook usado pelo agente em todos os atendimentos.
+                        </div>
+                        <form id="upload-form">
+                            <div class="mb-4">
+                                <label class="form-label">Nome do especialista</label>
+                                <input type="text" id="especialista" data-testid="training-specialist" class="form-control" placeholder="Ex: João Vendas">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Arquivo (.txt)</label>
+                                <input type="file" id="arquivo" data-testid="training-file" class="form-control" accept=".txt,.json,.csv" required>
+                            </div>
+                            <button class="btn btn-primary" data-testid="training-submit" id="btn-upload">Importar e treinar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Playbooks aprendidos</h3></div>
+                    <div class="card-body" id="lista-playbooks" data-testid="playbooks-list"></div>
+                </div>
+                <div class="card mt-5 d-none" id="card-detalhe">
+                    <div class="card-header"><h3 class="card-title fs-5" id="detalhe-titulo"></h3></div>
+                    <div class="card-body"><pre class="fs-8" style="white-space:pre-wrap" id="detalhe-conteudo" data-testid="playbook-content"></pre></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        async function carregar() {
+            const data = await api('/training/playbooks');
+            document.getElementById('lista-playbooks').innerHTML = data.playbooks.length ? data.playbooks.map(p => `
+                <div class="d-flex flex-wrap align-items-center justify-content-between border-bottom py-3 gap-2">
+                    <div>
+                        <div class="fw-bold fs-7">${p.especialista} <span class="text-muted fw-normal">· ${p.arquivo}</span></div>
+                        <div class="text-muted fs-8">${p.total_mensagens} mensagens · ${new Date(p.created_at).toLocaleString('pt-BR')}</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <span class="badge badge-light-${p.ativo ? 'success' : 'secondary'}">${p.ativo ? 'Ativo' : 'Inativo'}</span>
+                        <button class="btn btn-sm btn-light-primary" data-testid="view-playbook" onclick="ver('${p.id}')">Ver</button>
+                        <button class="btn btn-sm btn-light-warning" onclick="alternar('${p.id}')">${p.ativo ? 'Desativar' : 'Ativar'}</button>
+                        <button class="btn btn-sm btn-light-danger" onclick="remover('${p.id}')">Excluir</button>
+                    </div>
+                </div>`).join('') : '<div class="text-muted fs-7">Nenhum playbook importado ainda.</div>';
+        }
+
+        async function ver(id) {
+            const p = await api(`/training/playbooks/${id}`);
+            document.getElementById('card-detalhe').classList.remove('d-none');
+            document.getElementById('detalhe-titulo').textContent = `Playbook · ${p.especialista}`;
+            document.getElementById('detalhe-conteudo').textContent = p.playbook || 'Playbook não gerado.';
+        }
+        async function alternar(id) { await api(`/training/playbooks/${id}/toggle`, { method: 'PATCH' }); carregar(); }
+        async function remover(id) { if (confirm('Excluir este playbook?')) { await api(`/training/playbooks/${id}`, { method: 'DELETE' }); carregar(); } }
+
+        document.getElementById('upload-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-upload');
+            btn.disabled = true; btn.textContent = 'Analisando com IA... isso pode levar 1 minuto';
+            try {
+                const fd = new FormData();
+                fd.append('file', document.getElementById('arquivo').files[0]);
+                fd.append('especialista', document.getElementById('especialista').value);
+                await apiUpload('/training/import', fd);
+                toast('Conversas importadas e playbook gerado');
+                document.getElementById('upload-form').reset();
+                carregar();
+            } catch (err) { toast(err.message, 'error'); }
+            btn.disabled = false; btn.textContent = 'Importar e treinar';
+        });
+
+        if (guard()) { renderNav('/treinamento.html'); carregar(); }
+    </script>
+</body>
+</html>

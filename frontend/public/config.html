@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="config-page">
+        <div class="row g-5">
+            <!-- WhatsApp / Evolution -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">WhatsApp (Evolution API)</h3></div>
+                    <div class="card-body">
+                        <div class="mb-4"><label class="form-label">URL da Evolution API</label>
+                            <input type="text" id="evo-url" data-testid="evo-url" class="form-control" placeholder="https://sua-evolution.com"></div>
+                        <div class="mb-4"><label class="form-label">Global API Key</label>
+                            <input type="password" id="evo-key" data-testid="evo-key" class="form-control"></div>
+                        <div class="mb-4"><label class="form-label">Instância ativa (usada para enviar mensagens)</label>
+                            <input type="text" id="evo-instance" data-testid="evo-instance" class="form-control" placeholder="promptmestre"></div>
+                        <button class="btn btn-primary" data-testid="save-evo" onclick="salvarEvolution()">Salvar credenciais</button>
+                    </div>
+                </div>
+
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h3 class="card-title fs-5">Instâncias</h3>
+                        <div class="card-toolbar"><button class="btn btn-sm btn-light" data-testid="list-instances" onclick="listarInstancias()">Atualizar lista</button></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 mb-5">
+                            <input type="text" id="nova-instancia" data-testid="new-instance-name" class="form-control form-control-sm" placeholder="nome-da-instancia">
+                            <button class="btn btn-sm btn-primary" data-testid="create-instance" onclick="criarInstancia()">Criar</button>
+                        </div>
+                        <div id="instancias" data-testid="instances-list"></div>
+                        <div class="text-center mt-5 d-none" id="qr-box">
+                            <div class="fw-bold fs-7 mb-3">Escaneie o QR Code no WhatsApp (Aparelhos conectados)</div>
+                            <img id="qr-img" data-testid="qr-image" class="img-fluid" style="max-width:280px">
+                            <div class="text-muted fs-8 mt-2" id="qr-status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agente IA -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Agente IA (Claude Sonnet 5)</h3></div>
+                    <div class="card-body">
+                        <label class="form-label">Prompt do especialista</label>
+                        <textarea id="system-prompt" data-testid="system-prompt" class="form-control" rows="10"></textarea>
+                        <div class="text-muted fs-8 mt-2">As regras de segurança (nunca confirmar vendas, qualificação invisível, transferência para humano) já são aplicadas automaticamente.</div>
+                        <button class="btn btn-primary mt-4" data-testid="save-prompt" onclick="salvarPrompt()">Salvar prompt</button>
+                    </div>
+                </div>
+
+                <div class="card mt-5">
+                    <div class="card-header"><h3 class="card-title fs-5">Meta CAPI (Eventos)</h3></div>
+                    <div class="card-body">
+                        <div class="mb-4"><label class="form-label">Pixel ID</label>
+                            <input type="text" id="pixel-id" data-testid="pixel-id" class="form-control"></div>
+                        <div class="mb-4"><label class="form-label">Access Token</label>
+                            <input type="password" id="capi-token" data-testid="capi-token" class="form-control"></div>
+                        <button class="btn btn-primary" data-testid="save-meta" onclick="salvarMeta()">Salvar Meta CAPI</button>
+                        <div class="text-muted fs-8 mt-3">Eventos enviados: Lead (qualificado), InitiateCheckout (negociação), AddToCart (documentação), Purchase (venda confirmada manualmente).</div>
+                    </div>
+                </div>
+
+                <div class="card mt-5">
+                    <div class="card-header"><h3 class="card-title fs-5">Regras de qualificação</h3></div>
+                    <div class="card-body">
+                        <div class="mb-4"><label class="form-label">Score mínimo para qualificar</label>
+                            <input type="number" id="min-score" data-testid="min-score" class="form-control" style="max-width:160px"></div>
+                        <div id="criterios" data-testid="criteria-list"></div>
+                        <button class="btn btn-sm btn-light-primary mt-3" onclick="addCriterio()">Adicionar critério</button>
+                        <button class="btn btn-primary mt-3 ms-2" data-testid="save-rules" onclick="salvarRegras()">Salvar regras</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        let criterios = [];
+
+        async function carregar() {
+            const s = await api('/settings');
+            document.getElementById('evo-url').value = s.evolution_api_url || '';
+            document.getElementById('evo-key').value = s.evolution_api_key || '';
+            document.getElementById('evo-instance').value = s.evolution_instance || '';
+            document.getElementById('system-prompt').value = s.system_prompt || '';
+            document.getElementById('pixel-id').value = s.meta_pixel_id || '';
+            document.getElementById('capi-token').value = s.meta_capi_token || '';
+            const r = s.qualification_rules || {};
+            document.getElementById('min-score').value = r.min_score_qualified || 50;
+            criterios = r.criteria || [];
+            renderCriterios();
+            if (s.evolution_api_url) listarInstancias();
+        }
+
+        function renderCriterios() {
+            document.getElementById('criterios').innerHTML = criterios.map((c, i) => `
+                <div class="d-flex gap-2 mb-2">
+                    <input class="form-control form-control-sm" value="${c.key}" onchange="criterios[${i}].key=this.value" placeholder="chave">
+                    <input class="form-control form-control-sm" value="${c.question || ''}" onchange="criterios[${i}].question=this.value" placeholder="palavra-chave/tema">
+                    <input type="number" class="form-control form-control-sm" style="max-width:90px" value="${c.weight || 10}" onchange="criterios[${i}].weight=parseInt(this.value)">
+                    <button class="btn btn-sm btn-icon btn-light-danger" onclick="criterios.splice(${i},1);renderCriterios()">×</button>
+                </div>`).join('');
+        }
+        function addCriterio() { criterios.push({ key: '', question: '', weight: 10 }); renderCriterios(); }
+
+        async function salvar(dados, msg) {
+            await api('/settings', { method: 'PATCH', body: JSON.stringify(dados) });
+            toast(msg);
+        }
+        const salvarEvolution = () => salvar({
+            evolution_api_url: document.getElementById('evo-url').value.replace(/\/$/, ''),
+            evolution_api_key: document.getElementById('evo-key').value,
+            evolution_instance: document.getElementById('evo-instance').value
+        }, 'Credenciais do WhatsApp salvas').then(listarInstancias);
+        const salvarMeta = () => salvar({
+            meta_pixel_id: document.getElementById('pixel-id').value,
+            meta_capi_token: document.getElementById('capi-token').value
+        }, 'Meta CAPI salvo');
+        const salvarPrompt = () => salvar({ system_prompt: document.getElementById('system-prompt').value }, 'Prompt salvo');
+        const salvarRegras = () => salvar({ qualification_rules: {
+            min_score_qualified: parseInt(document.getElementById('min-score').value),
+            criteria: criterios.filter(c => c.key)
+        }}, 'Regras salvas');
+
+        async function listarInstancias() {
+            try {
+                const data = await api('/evolution/instances');
+                const lista = Array.isArray(data) ? data : (data.instances || []);
+                document.getElementById('instancias').innerHTML = lista.length ? lista.map(i => {
+                    const nome = i.name || i.instanceName || (i.instance && i.instance.instanceName) || '';
+                    const estado = i.connectionStatus || i.status || (i.instance && i.instance.status) || 'desconhecido';
+                    const conectado = ['open', 'connected'].includes(String(estado).toLowerCase());
+                    return `<div class="d-flex flex-wrap align-items-center justify-content-between border-bottom py-3 gap-2">
+                        <div><span class="fw-bold fs-7">${nome}</span>
+                            <span class="badge badge-light-${conectado ? 'success' : 'warning'} ms-2">${estado}</span></div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-light-primary" data-testid="qr-${nome}" onclick="gerarQr('${nome}')">QR Code</button>
+                            <button class="btn btn-sm btn-light-info" onclick="aplicarWebhook('${nome}')">Aplicar webhook</button>
+                            <button class="btn btn-sm btn-light" onclick="usarInstancia('${nome}')">Usar</button>
+                            <button class="btn btn-sm btn-light-danger" onclick="excluirInstancia('${nome}')">Excluir</button>
+                        </div></div>`;
+                }).join('') : '<div class="text-muted fs-7">Nenhuma instância encontrada.</div>';
+            } catch (e) {
+                document.getElementById('instancias').innerHTML = `<div class="alert alert-warning fs-8 mb-0">${e.message}</div>`;
+            }
+        }
+
+        async function criarInstancia() {
+            const nome = document.getElementById('nova-instancia').value.trim();
+            if (!nome) return toast('Informe o nome da instância', 'error');
+            try {
+                await api(`/evolution/instances?instance_name=${encodeURIComponent(nome)}`, { method: 'POST' });
+                toast('Instância criada');
+                await api('/settings', { method: 'PATCH', body: JSON.stringify({ evolution_instance: nome }) });
+                document.getElementById('evo-instance').value = nome;
+                await aplicarWebhook(nome);
+                await gerarQr(nome);
+                listarInstancias();
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function gerarQr(nome) {
+            try {
+                const data = await api(`/evolution/instances/${encodeURIComponent(nome)}/qrcode`);
+                const base64 = data.base64 || (data.qrcode && data.qrcode.base64) || '';
+                document.getElementById('qr-box').classList.remove('d-none');
+                if (base64) {
+                    document.getElementById('qr-img').src = base64.startsWith('data:') ? base64 : `data:image/png;base64,${base64}`;
+                    document.getElementById('qr-status').textContent = `Instância: ${nome} · aguardando leitura`;
+                } else {
+                    document.getElementById('qr-status').textContent = 'QR não retornado (instância pode já estar conectada).';
+                }
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function aplicarWebhook(nome) {
+            const url = `${window.location.origin}/api/webhook/evolution`;
+            try {
+                await api(`/evolution/instances/${encodeURIComponent(nome)}/webhook?webhook_url=${encodeURIComponent(url)}`, { method: 'POST' });
+                toast('Webhook aplicado: ' + url);
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function usarInstancia(nome) {
+            await api('/settings', { method: 'PATCH', body: JSON.stringify({ evolution_instance: nome }) });
+            document.getElementById('evo-instance').value = nome;
+            toast('Instância ativa: ' + nome);
+        }
+
+        async function excluirInstancia(nome) {
+            if (!confirm(`Excluir a instância ${nome}?`)) return;
+            await api(`/evolution/instances/${encodeURIComponent(nome)}`, { method: 'DELETE' });
+            toast('Instância excluída'); listarInstancias();
+        }
+
+        if (guard()) { renderNav('/config.html'); carregar(); }
+    </script>
+</body>
+</html>

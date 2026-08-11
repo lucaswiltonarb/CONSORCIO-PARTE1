@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads / CRM - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="leads-page">
+        <div class="card mb-5">
+            <div class="card-body d-flex flex-wrap gap-3 align-items-end">
+                <div>
+                    <label class="form-label fs-8">Estágio</label>
+                    <select id="f-stage" data-testid="filter-stage" class="form-select form-select-sm" style="min-width:180px">
+                        <option value="">Todos</option>
+                        <option value="new">Novo</option>
+                        <option value="in_progress">Em conversa</option>
+                        <option value="qualified">Qualificado</option>
+                        <option value="negotiation">Negociação</option>
+                        <option value="documentation">Documentação</option>
+                        <option value="confirmed">Venda confirmada</option>
+                        <option value="lost">Perdido</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label fs-8">Temperatura</label>
+                    <select id="f-temp" data-testid="filter-temp" class="form-select form-select-sm" style="min-width:150px">
+                        <option value="">Todas</option>
+                        <option value="hot">Quente</option>
+                        <option value="warm">Morno</option>
+                        <option value="cold">Frio</option>
+                    </select>
+                </div>
+                <button class="btn btn-sm btn-primary" data-testid="apply-filters" onclick="carregarLeads()">Filtrar</button>
+                <span class="text-muted fs-7 ms-auto" id="total-info"></span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body table-responsive p-0">
+                <table class="table table-row-dashed align-middle mb-0">
+                    <thead><tr class="fw-bold text-muted px-4"><th class="ps-4">Lead</th><th>Telefone</th><th>Estágio</th><th>Score</th><th>Temp.</th><th>Atendimento</th><th class="text-end pe-4">Ações</th></tr></thead>
+                    <tbody id="leads-tbody" data-testid="leads-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Painel de detalhes -->
+        <div class="card mt-5 d-none" id="painel" data-testid="lead-panel">
+            <div class="card-header">
+                <h3 class="card-title fs-5" id="painel-titulo"></h3>
+                <div class="card-toolbar"><button class="btn btn-sm btn-light" onclick="document.getElementById('painel').classList.add('d-none')">Fechar</button></div>
+            </div>
+            <div class="card-body">
+                <div class="row g-5">
+                    <div class="col-lg-6">
+                        <h4 class="fs-6 mb-3">Funil</h4>
+                        <div class="d-flex gap-2 mb-5">
+                            <select id="novo-stage" data-testid="stage-select" class="form-select form-select-sm" style="max-width:220px">
+                                <option value="new">Novo</option>
+                                <option value="in_progress">Em conversa</option>
+                                <option value="qualified">Qualificado</option>
+                                <option value="negotiation">Negociação</option>
+                                <option value="documentation">Documentação</option>
+                                <option value="lost">Perdido</option>
+                            </select>
+                            <button class="btn btn-sm btn-primary" data-testid="save-stage" onclick="mudarStage()">Mover</button>
+                        </div>
+                        <h4 class="fs-6 mb-3">Confirmação de venda (somente humana)</h4>
+                        <div class="alert alert-warning fs-8">A IA nunca confirma vendas. Somente um atendente pode registrar a venda abaixo.</div>
+                        <button class="btn btn-sm btn-success me-2" data-testid="confirm-sale" onclick="confirmarVenda()">Confirmar venda</button>
+                        <button class="btn btn-sm btn-light-danger" data-testid="mark-lost" onclick="marcarPerdido()">Marcar como perdido</button>
+                    </div>
+                    <div class="col-lg-6">
+                        <h4 class="fs-6 mb-3">Documentação <span class="text-muted fs-8" id="doc-progresso"></span></h4>
+                        <div id="doc-lista" data-testid="doc-list" class="mb-4"></div>
+                        <div class="d-flex gap-2">
+                            <select id="doc-novo" data-testid="doc-select" class="form-select form-select-sm"></select>
+                            <button class="btn btn-sm btn-light-primary" data-testid="doc-request" onclick="solicitarDoc()">Solicitar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        let leadSel = null;
+        let checklist = [];
+
+        async function carregarLeads() {
+            const params = new URLSearchParams();
+            const st = document.getElementById('f-stage').value;
+            const tp = document.getElementById('f-temp').value;
+            if (st) params.set('stage', st);
+            if (tp) params.set('temperature', tp);
+            try {
+                const data = await api(`/leads?${params.toString()}`);
+                document.getElementById('total-info').textContent = `${data.total} lead(s)`;
+                document.getElementById('leads-tbody').innerHTML = data.leads.length ? data.leads.map(l => `
+                    <tr>
+                        <td class="ps-4 fw-bold">${l.name || '—'}</td>
+                        <td>${l.phone}</td>
+                        <td><span class="badge badge-light-primary">${STAGE_LABEL[l.stage] || l.stage}</span></td>
+                        <td>${l.score || 0}</td>
+                        <td>${badgeTemp(l.temperature)}</td>
+                        <td>${l.human_takeover ? `<span class="badge badge-light-warning">${l.assigned_to || 'Humano'}</span>` : '<span class="badge badge-light-info">IA</span>'}</td>
+                        <td class="text-end pe-4">
+                            <button class="btn btn-sm btn-light-primary" data-testid="open-lead-${l.phone}" onclick='abrirPainel(${JSON.stringify(l).replace(/'/g, "&#39;")})'>Gerenciar</button>
+                        </td>
+                    </tr>`).join('') : '<tr><td colspan="7" class="p-6 text-muted">Nenhum lead encontrado.</td></tr>';
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function abrirPainel(l) {
+            leadSel = l;
+            document.getElementById('painel').classList.remove('d-none');
+            document.getElementById('painel-titulo').textContent = `${l.name || l.phone} · ${l.phone}`;
+            document.getElementById('novo-stage').value = l.stage;
+            if (!checklist.length) checklist = (await api('/documents/checklist')).documentos;
+            document.getElementById('doc-novo').innerHTML = checklist.map(d => `<option value="${d}">${d}</option>`).join('');
+            await carregarDocs();
+            document.getElementById('painel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function carregarDocs() {
+            const d = await api(`/documents/${leadSel.id}`);
+            document.getElementById('doc-progresso').textContent = `${d.recebidos.length}/${d.solicitados.length} recebidos`;
+            document.getElementById('doc-lista').innerHTML = d.solicitados.length ? d.solicitados.map(doc => {
+                const ok = d.recebidos.includes(doc);
+                return `<div class="d-flex align-items-center justify-content-between border-bottom py-2">
+                    <span class="fs-7 ${ok ? 'text-success fw-bold' : ''}">${doc}</span>
+                    <span>
+                        ${ok ? '<span class="badge badge-light-success me-2">Recebido</span>'
+                             : `<button class="btn btn-sm btn-light-success me-2" data-testid="doc-receive" onclick="receberDoc('${doc}')">Marcar recebido</button>`}
+                        <button class="btn btn-sm btn-icon btn-light-danger" onclick="removerDoc('${doc}')">×</button>
+                    </span></div>`;
+            }).join('') : '<div class="text-muted fs-7">Nenhum documento solicitado ainda.</div>';
+        }
+
+        async function solicitarDoc() {
+            await api(`/documents/${leadSel.id}/request`, { method: 'POST', body: JSON.stringify({ documento: document.getElementById('doc-novo').value }) });
+            toast('Documento solicitado');
+            await carregarDocs(); carregarLeads();
+        }
+        async function receberDoc(doc) {
+            await api(`/documents/${leadSel.id}/receive`, { method: 'POST', body: JSON.stringify({ documento: doc }) });
+            toast('Documento marcado como recebido');
+            await carregarDocs();
+        }
+        async function removerDoc(doc) {
+            await api(`/documents/${leadSel.id}?documento=${encodeURIComponent(doc)}`, { method: 'DELETE' });
+            await carregarDocs();
+        }
+        async function mudarStage() {
+            await api(`/leads/${leadSel.id}/stage?stage=${document.getElementById('novo-stage').value}`, { method: 'PATCH' });
+            toast('Estágio atualizado'); carregarLeads();
+        }
+        async function confirmarVenda() {
+            if (!confirm('Confirmar a venda deste lead? Esta ação envia o evento Purchase para o Meta.')) return;
+            await api(`/leads/${leadSel.id}/confirm-sale`, { method: 'POST' });
+            toast('Venda confirmada manualmente'); carregarLeads();
+        }
+        async function marcarPerdido() {
+            const motivo = prompt('Motivo da perda (opcional):') || '';
+            await api(`/leads/${leadSel.id}/mark-lost?reason=${encodeURIComponent(motivo)}`, { method: 'POST' });
+            toast('Lead marcado como perdido'); carregarLeads();
+        }
+
+        if (guard()) { renderNav('/leads.html'); carregarLeads(); }
+    </script>
+</body>
+</html>

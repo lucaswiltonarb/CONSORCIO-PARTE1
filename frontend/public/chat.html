@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atendimento - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="chat-page">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title fs-5">Conversas</h3>
+                        <div class="card-toolbar"><button class="btn btn-sm btn-light" data-testid="refresh-chats" onclick="carregarChats()">Atualizar</button></div>
+                    </div>
+                    <div class="card-body p-0" id="chat-list" data-testid="chat-list" style="max-height:70vh;overflow:auto"></div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div>
+                            <h3 class="card-title fs-5 mb-0" id="chat-nome">Selecione uma conversa</h3>
+                            <span class="text-muted fs-8" id="chat-info"></span>
+                        </div>
+                        <div id="chat-actions"></div>
+                    </div>
+                    <div class="card-body" id="chat-messages" data-testid="chat-messages" style="height:55vh;overflow:auto;background:#f9f9f9"></div>
+                    <div class="card-footer">
+                        <form id="send-form" class="d-flex gap-2">
+                            <input type="text" id="msg-input" data-testid="chat-input" class="form-control" placeholder="Escreva como atendente humano..." disabled>
+                            <button class="btn btn-primary" data-testid="chat-send" id="send-btn" disabled>Enviar</button>
+                        </form>
+                        <div class="text-muted fs-8 mt-2">Ao enviar uma mensagem manual, o atendimento humano é ativado e a IA para de responder este lead.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        let leadAtual = null;
+
+        async function carregarChats() {
+            try {
+                const data = await api('/chat/active');
+                document.getElementById('chat-list').innerHTML = data.chats.length ? data.chats.map(c => `
+                    <div class="d-flex flex-column p-4 border-bottom cursor-pointer ${leadAtual && leadAtual.id === c.id ? 'bg-light-primary' : ''}"
+                         data-testid="chat-item-${c.phone}" onclick='abrirChat(${JSON.stringify(c).replace(/'/g, "&#39;")})'>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">${c.name || c.phone}</span>
+                            ${badgeTemp(c.temperature)}
+                        </div>
+                        <span class="text-muted fs-8 text-truncate">${(c.last_message && c.last_message.content) || 'Sem mensagens'}</span>
+                        <span class="fs-9 text-gray-600 mt-1">${STAGE_LABEL[c.stage] || c.stage} · Score ${c.score || 0}
+                        ${c.human_takeover ? '<span class="badge badge-light-warning ms-1">Humano</span>' : '<span class="badge badge-light-info ms-1">IA</span>'}</span>
+                    </div>`).join('') : '<div class="p-6 text-muted">Nenhuma conversa ainda. As conversas aparecem aqui quando chegarem mensagens no WhatsApp.</div>';
+            } catch (e) { toast(e.message, 'error'); }
+        }
+
+        async function abrirChat(c) {
+            leadAtual = c;
+            document.getElementById('chat-nome').textContent = c.name || c.phone;
+            document.getElementById('chat-info').textContent = `${c.phone} · ${STAGE_LABEL[c.stage] || c.stage} · Score ${c.score || 0}`;
+            document.getElementById('msg-input').disabled = false;
+            document.getElementById('send-btn').disabled = false;
+            document.getElementById('chat-actions').innerHTML = c.human_takeover
+                ? `<button class="btn btn-sm btn-light-info" data-testid="release-btn" onclick="devolverIA()">Devolver para IA</button>`
+                : `<button class="btn btn-sm btn-light-warning" data-testid="takeover-btn" onclick="assumir()">Assumir atendimento</button>`;
+            await carregarMensagens();
+            carregarChats();
+        }
+
+        async function carregarMensagens() {
+            const data = await api(`/leads/${leadAtual.id}/messages`);
+            const box = document.getElementById('chat-messages');
+            box.innerHTML = data.messages.map(m => {
+                const meu = m.role !== 'lead';
+                const cor = m.role === 'lead' ? 'bg-white' : (m.role === 'human' ? 'bg-light-warning' : 'bg-light-primary');
+                const autor = m.role === 'lead' ? 'Cliente' : (m.role === 'human' ? (m.atendente || 'Atendente') : 'Agente IA');
+                return `<div class="d-flex mb-3 ${meu ? 'justify-content-end' : ''}">
+                    <div class="${cor} rounded p-3 shadow-sm" style="max-width:75%">
+                        <div class="fs-9 text-muted mb-1">${autor}</div>
+                        <div class="fs-7">${(m.content || '').replace(/</g, '&lt;')}</div>
+                        <div class="fs-9 text-gray-500 mt-1">${new Date(m.timestamp).toLocaleString('pt-BR')}</div>
+                    </div></div>`;
+            }).join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function assumir() {
+            await api(`/leads/${leadAtual.id}/takeover`, { method: 'POST' });
+            toast('Atendimento humano ativado');
+            leadAtual.human_takeover = true;
+            abrirChat(leadAtual);
+        }
+
+        async function devolverIA() {
+            await api(`/leads/${leadAtual.id}/release`, { method: 'POST' });
+            toast('Lead devolvido para a IA');
+            leadAtual.human_takeover = false;
+            abrirChat(leadAtual);
+        }
+
+        document.getElementById('send-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('msg-input');
+            if (!input.value.trim() || !leadAtual) return;
+            try {
+                await api('/chat/send', { method: 'POST', body: JSON.stringify({ lead_id: leadAtual.id, content: input.value }) });
+                input.value = '';
+                leadAtual.human_takeover = true;
+                await carregarMensagens();
+                carregarChats();
+            } catch (err) { toast(err.message, 'error'); }
+        });
+
+        if (guard()) {
+            renderNav('/chat.html');
+            carregarChats();
+            setInterval(() => { if (leadAtual) carregarMensagens(); carregarChats(); }, 15000);
+        }
+    </script>
+</body>
+</html>

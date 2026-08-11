@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PROMPT MESTRE</title>
+    <link href="/assets/plugins/global/plugins.bundle.css" rel="stylesheet">
+    <link href="/assets/css/style.bundle.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div id="pm-nav"></div>
+    <div class="container-fluid py-6" data-testid="dashboard-page">
+        <div class="row g-5 mb-5">
+            <div class="col-6 col-md-3">
+                <div class="card"><div class="card-body">
+                    <div class="fs-2 fw-bolder text-primary" id="total-leads" data-testid="stat-total-leads">0</div>
+                    <div class="text-muted fs-7">Total de Leads</div>
+                </div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card"><div class="card-body">
+                    <div class="fs-2 fw-bolder text-danger" id="hot-leads" data-testid="stat-hot-leads">0</div>
+                    <div class="text-muted fs-7">Leads Quentes</div>
+                </div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card"><div class="card-body">
+                    <div class="fs-2 fw-bolder text-success" id="confirmed" data-testid="stat-confirmed">0</div>
+                    <div class="text-muted fs-7">Vendas Confirmadas</div>
+                </div></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card"><div class="card-body">
+                    <div class="fs-2 fw-bolder text-warning" id="conversion" data-testid="stat-conversion">0%</div>
+                    <div class="text-muted fs-7">Taxa de Conversão</div>
+                </div></div>
+            </div>
+        </div>
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="card-title fs-5">Funil de Vendas</h3></div>
+                    <div class="card-body" id="funnel-container" data-testid="funnel-container"></div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header"><h3 class="card-title fs-5">Desempenho por Origem</h3></div>
+                    <div class="card-body table-responsive">
+                        <table class="table table-row-dashed align-middle">
+                            <thead><tr class="fw-bold text-muted"><th>Origem</th><th>Leads</th><th>Vendas</th><th>Score médio</th><th>Conv.</th></tr></thead>
+                            <tbody id="origins-tbody" data-testid="origins-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-5">
+            <div class="card-header"><h3 class="card-title fs-5">Últimos 7 dias</h3></div>
+            <div class="card-body table-responsive">
+                <table class="table table-row-dashed align-middle">
+                    <thead><tr class="fw-bold text-muted"><th>Data</th><th>Novos leads</th><th>Qualificados</th><th>Vendas</th></tr></thead>
+                    <tbody id="daily-tbody" data-testid="daily-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/js/app.js"></script>
+    <script>
+        if (guard()) {
+            renderNav('/dashboard.html');
+            (async () => {
+                try {
+                    const ov = await api('/analytics/overview');
+                    document.getElementById('total-leads').textContent = ov.total_leads;
+                    document.getElementById('hot-leads').textContent = (ov.by_temperature || {}).hot || 0;
+                    document.getElementById('confirmed').textContent = ov.confirmed_sales;
+                    document.getElementById('conversion').textContent = ov.conversion_rate + '%';
+
+                    const fn = await api('/analytics/funnel');
+                    const max = Math.max(...fn.funnel.map(f => f.count), 1);
+                    document.getElementById('funnel-container').innerHTML = fn.funnel.map(f => `
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between fs-7 mb-1">
+                                <span class="fw-semibold">${STAGE_LABEL[f.stage] || f.stage}</span>
+                                <span class="text-muted">${f.count}</span>
+                            </div>
+                            <div class="progress h-8px"><div class="progress-bar bg-primary" style="width:${(f.count / max) * 100}%"></div></div>
+                        </div>`).join('');
+
+                    const og = await api('/analytics/origin');
+                    document.getElementById('origins-tbody').innerHTML = og.origins.length
+                        ? og.origins.map(o => `<tr><td>${o.origin}</td><td>${o.total}</td><td>${o.confirmed}</td><td>${o.avg_score ?? 0}</td><td>${o.conversion_rate}%</td></tr>`).join('')
+                        : '<tr><td colspan="5" class="text-muted">Sem dados ainda</td></tr>';
+
+                    const dl = await api('/analytics/daily?days=7');
+                    document.getElementById('daily-tbody').innerHTML = dl.daily.length
+                        ? dl.daily.map(d => `<tr><td>${d._id}</td><td>${d.new_leads}</td><td>${d.qualified}</td><td>${d.confirmed}</td></tr>`).join('')
+                        : '<tr><td colspan="4" class="text-muted">Sem dados ainda</td></tr>';
+                } catch (e) { toast(e.message, 'error'); }
+            })();
+        }
+    </script>
+</body>
+</html>

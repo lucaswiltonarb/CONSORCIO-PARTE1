@@ -1,53 +1,38 @@
 # PROMPT MESTRE - Backend Principal
+from dotenv import load_dotenv
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
-from dotenv import load_dotenv
+from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
-from pathlib import Path
-
-# Carrega variáveis de ambiente
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# App FastAPI
 app = FastAPI(title="PROMPT MESTRE", description="Plataforma de Inteligência Comercial WhatsApp")
 
-# Templates e Assets
-TEMPLATE_DIR = Path("/app/template_extract")
+# UI estática (também servida pelo servidor do frontend na porta 3000)
+TEMPLATE_DIR = Path("/app/frontend/public")
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
-
-# Monta assets estáticos
 app.mount("/assets", StaticFiles(directory=str(TEMPLATE_DIR / "assets")), name="assets")
+app.mount("/js", StaticFiles(directory=str(TEMPLATE_DIR / "js")), name="js")
 
-# Importa e configura rotas
-from routes import webhook, leads, chat, settings, analytics, evolution
+from routes import webhook, leads, chat, settings, analytics, evolution, auth, training, documents
 
-webhook.set_db(db)
-leads.set_db(db)
-chat.set_db(db)
-settings.set_db(db)
-analytics.set_db(db)
-evolution.set_db(db)
+for modulo in (webhook, leads, chat, settings, analytics, evolution, auth, training, documents):
+    modulo.set_db(db)
+    app.include_router(modulo.router, prefix="/api")
 
-# Registra routers com prefixo /api
-app.include_router(webhook.router, prefix="/api")
-app.include_router(leads.router, prefix="/api")
-app.include_router(chat.router, prefix="/api")
-app.include_router(settings.router, prefix="/api")
-app.include_router(analytics.router, prefix="/api")
-app.include_router(evolution.router, prefix="/api")
-
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -56,32 +41,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-# ============ ROTAS HTML ============
+PAGINAS = ["login", "dashboard", "chat", "leads", "config", "treinamento", "usuarios"]
 
-@app.get("/", response_class=HTMLResponse)
-async def index(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
 
-@app.get("/chat", response_class=HTMLResponse)
-async def chat_page(request: Request):
-    return templates.TemplateResponse("chat.html", {"request": request})
+@app.get("/")
+async def index():
+    return RedirectResponse(url="/dashboard.html")
 
-@app.get("/leads", response_class=HTMLResponse)
-async def leads_page(request: Request):
-    return templates.TemplateResponse("leads.html", {"request": request})
 
-@app.get("/config", response_class=HTMLResponse)
-async def config_page(request: Request):
-    return templates.TemplateResponse("config.html", {"request": request})
+def _registrar_pagina(nome: str):
+    @app.get(f"/{nome}", response_class=HTMLResponse, name=f"page_{nome}")
+    async def pagina(request: Request, _nome=nome):
+        return templates.TemplateResponse(f"{_nome}.html", {"request": request})
 
-# Health check
+    @app.get(f"/{nome}.html", response_class=HTMLResponse, name=f"page_{nome}_html")
+    async def pagina_html(request: Request, _nome=nome):
+        return templates.TemplateResponse(f"{_nome}.html", {"request": request})
+
+
+for _p in PAGINAS:
+    _registrar_pagina(_p)
+
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "service": "prompt_mestre"}
+
+
+@app.on_event("startup")
+async def startup():
+    await db.users.create_index("email", unique=True)
+    await db.leads.create_index("phone")
+    await db.messages.create_index("lead_id")
+    await auth.seed_admin(db)
+    logger.info("PROMPT MESTRE iniciado")
+
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
