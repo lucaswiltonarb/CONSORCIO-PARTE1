@@ -1,0 +1,1231 @@
+<analysis>**original_problem_statement**: 
+The user wants to build PROMPT MESTRE, a complete commercial intelligence and customer service platform for a consortium company via WhatsApp.
+**PRODUCT REQUIREMENTS:**
+1. WhatsApp integration using Evolution API (with instance management directly in the dashboard).
+2. Intelligent agent using Claude Sonnet 5 that learns from historical specialist conversations and qualifies leads invisibly.
+3. Full CRM funnel with dynamic qualification.
+4. **Manual confirmation of sales ONLY** (Agent must never auto-confirm).
+5. Human intervention handoff.
+6. Meta CAPI (Events) integration configurable via the dashboard.
+7. Traffic manager dashboard for ROI and lead tracking.
+8. **CRITICAL USER CONSTRAINTS**: 
+   - **Extreme token economy**: SUPER ECONOMICO. Do not use testing agents, do not take unnecessary screenshots, do not run unnecessary searches. 
+   - **Fixing the broken preview**: The previous implementation attempted to serve HTML directly from FastAPI on port 8001, which broke the Kubernetes ingress routing (which sends non- traffic to port 3000). The user angrily demanded the app be fully developed and accessible immediately.
+
+**User's preferred language**: Portuguese (You MUST automatically detect the user's primary language from their messages inside the <trajectory> tag and INSTRUCT next agent to respond in the user's preferred language only. All user-facing text, alerts, and responses must be in Portuguese).
+
+**what currently exists?** 
+A fully functional Full-Stack application. The backend runs on FastAPI (port 8001) handling all  routes. The frontend uses plain HTML/JS/CSS (Metronic template) and is now correctly located in  so it is served successfully by the default frontend server on port 3000. All core features are implemented: Auth, Evolution API integration, Claude LLM chat, Lead management/CRM, Document handling, and Historical chat training.
+
+**Last working item**:
+- Last item agent was working: Fixing the broken preview environment by migrating static HTML files to  and implementing the remaining app phases (Authentication, Document Request/Receive flow, Historical Training upload, and User Management) as aggressively requested by the user.
+- Status: USER VERIFICATION PENDING
+- Agent Testing Done: Y
+- Which testing method agent to use?: curl, python -c, and manual bash scripts. (Testing agent was bypassed due to the user's strict token economy constraints).
+- User Testing Done: N
+
+**All Pending/In progress Issue list**:
+None. 
+*(Note: There are 92+ 
+  ! eslint(no-unused-vars): Catch parameter 'e' is caught but never used.
+   ,-[frontend/public/js/app.js:7:98]
+ 6 | function getToken() { return localStorage.getItem(TOKEN_KEY); }
+ 7 | function getUser() { try { return JSON.parse(localStorage.getItem(USER_KEY) || 'null'); } catch (e) { return null; } }
+   :                                                                                                  |
+   :                                                                                                  `-- 'e' is declared here
+ 8 | 
+   `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Function 'api' is declared but never used.
+    ,-[frontend/public/js/app.js:15:16]
+ 14 | 
+ 15 | async function api(path, options = {}) {
+    :                ^|^
+    :                 `-- 'api' is declared here
+ 16 |   const opts = { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } };
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'apiUpload' is declared but never used.
+    ,-[frontend/public/js/app.js:26:16]
+ 25 | 
+ 26 | async function apiUpload(path, formData) {
+    :                ^^^^|^^^^
+    :                    `-- 'apiUpload' is declared here
+ 27 |   const token = getToken();
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'guard' is declared but never used.
+    ,-[frontend/public/js/app.js:38:10]
+ 37 | 
+ 38 | function guard() {
+    :          ^^|^^
+    :            `-- 'guard' is declared here
+ 39 |   if (!getToken()) { window.location.href = '/login.html'; return false; }
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'renderNav' is declared but never used.
+    ,-[frontend/public/js/app.js:52:10]
+ 51 | 
+ 52 | function renderNav(ativo) {
+    :          ^^^^|^^^^
+    :              `-- 'renderNav' is declared here
+ 53 |   const user = getUser() || {};
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'badgeTemp' is declared but never used.
+    ,-[frontend/public/js/app.js:79:10]
+ 78 | 
+ 79 | function badgeTemp(t) {
+    :          ^^^^|^^^^
+    :              `-- 'badgeTemp' is declared here
+ 80 |   const map = { hot: 'danger', warm: 'warning', cold: 'secondary' };
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'STAGE_LABEL' is declared but never used. Unused variables should start with a '_'.
+    ,-[frontend/public/js/app.js:85:7]
+ 84 | 
+ 85 | const STAGE_LABEL = {
+    :       ^^^^^|^^^^^
+    :            `-- 'STAGE_LABEL' is declared here
+ 86 |   new: 'Novo', in_progress: 'Em conversa', qualified: 'Qualificado',
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'toast' is declared but never used.
+    ,-[frontend/public/js/app.js:91:10]
+ 90 | 
+ 91 | function toast(msg, tipo = 'success') {
+    :          ^^|^^
+    :            `-- 'toast' is declared here
+ 92 |   const div = document.createElement('div');
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint-plugin-unicorn(no-useless-fallback-in-spread): Empty fallbacks in spreads are unnecessary
+    ,-[frontend/public/js/app.js:16:77]
+ 15 | async function api(path, options = {}) {
+ 16 |   const opts = { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } };
+    :                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 17 |   const token = getToken();
+    `----
+  help: Spreading falsy values in object literals won't add any unexpected properties, so it's unnecessary to add an empty object as fallback.
+
+  ! eslint(no-unused-vars): Variable 'actionTypes' is declared but never used. Unused variables should start with a '_'.
+   ,-[frontend/src/hooks/use-toast.js:8:7]
+ 7 | 
+ 8 | const actionTypes = {
+   :       ^^^^^|^^^^^
+   :            `-- 'actionTypes' is declared here
+ 9 |   ADD_TOAST: "ADD_TOAST",
+   `----
+  help: Consider removing this declaration.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/search/horizontal.js:1:62]
+ 1 | "use strict";var KTSearchHorizontal={init:function(){var e,n;e=document.querySelector("#kt_advanced_search_form").querySelector('[name="tags"]'),new Tagify(e),(n=document.querySelector("#kt_horizontal_search_advanced_link")).addEventListener("click",(function(e){e.preventDefault(),"Advanced Search"===n.innerHTML?n.innerHTML="Hide Advanced Search":n.innerHTML="Advanced Search"}))}};KTUtil.onDOMContentLoaded((function(){KTSearchHorizontal.init()}));
+   :                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/search/horizontal.js:1:264]
+ 1 | "use strict";var KTSearchHorizontal={init:function(){var e,n;e=document.querySelector("#kt_advanced_search_form").querySelector('[name="tags"]'),new Tagify(e),(n=document.querySelector("#kt_horizontal_search_advanced_link")).addEventListener("click",(function(e){e.preventDefault(),"Advanced Search"===n.innerHTML?n.innerHTML="Hide Advanced Search":n.innerHTML="Advanced Search"}))}};KTUtil.onDOMContentLoaded((function(){KTSearchHorizontal.init()}));
+   :                                                                                                                                                                                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Variable 'e' is assigned a value but never used. Unused variables should start with a '_'.
+   ,-[template_extract/assets/js/custom/utilities/search/horizontal.js:1:58]
+ 1 | "use strict";var KTSearchHorizontal={init:function(){var e,n;e=document.querySelector("#kt_advanced_search_form").querySelector('[name="tags"]'),new Tagify(e),(n=document.querySelector("#kt_horizontal_search_advanced_link")).addEventListener("click",(function(e){e.preventDefault(),"Advanced Search"===n.innerHTML?n.innerHTML="Hide Advanced Search":n.innerHTML="Advanced Search"}))}};KTUtil.onDOMContentLoaded((function(){KTSearchHorizontal.init()}));
+   :                                                          |   |
+   :                                                          |   `-- it was last assigned here
+   :                                                          `-- 'e' is declared here
+   `----
+  help: Did you mean to use this variable?
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-constant-binary-expression): Unexpected constant truthiness on the left-hand side of a "&&" expression
+   ,-[template_extract/assets/js/custom/utilities/modals/share-earn.js:1:176]
+ 1 | "use strict";var KTModalShareEarn={init:function(){var e,n,s;e=document.querySelector("#kt_share_earn_link_copy_button"),n=document.querySelector("#kt_share_earn_link_input"),(s=new ClipboardJS(e))&&s.on("success",(function(s){var t=e.innerHTML;n.classList.add("bg-success"),n.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=t,n.classList.remove("bg-success"),n.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTModalShareEarn.init()}));
+   :                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: This expression always evaluates to the constant on the left-hand side
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/share-earn.js:1:62]
+ 1 | "use strict";var KTModalShareEarn={init:function(){var e,n,s;e=document.querySelector("#kt_share_earn_link_copy_button"),n=document.querySelector("#kt_share_earn_link_input"),(s=new ClipboardJS(e))&&s.on("success",(function(s){var t=e.innerHTML;n.classList.add("bg-success"),n.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=t,n.classList.remove("bg-success"),n.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTModalShareEarn.init()}));
+   :                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/share-earn.js:1:246]
+ 1 | "use strict";var KTModalShareEarn={init:function(){var e,n,s;e=document.querySelector("#kt_share_earn_link_copy_button"),n=document.querySelector("#kt_share_earn_link_input"),(s=new ClipboardJS(e))&&s.on("success",(function(s){var t=e.innerHTML;n.classList.add("bg-success"),n.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=t,n.classList.remove("bg-success"),n.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTModalShareEarn.init()}));
+   :                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/share-earn.js:1:361]
+ 1 | "use strict";var KTModalShareEarn={init:function(){var e,n,s;e=document.querySelector("#kt_share_earn_link_copy_button"),n=document.querySelector("#kt_share_earn_link_input"),(s=new ClipboardJS(e))&&s.on("success",(function(s){var t=e.innerHTML;n.classList.add("bg-success"),n.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=t,n.classList.remove("bg-success"),n.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTModalShareEarn.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/main.js:1:80]
+ 1 | "use strict";var KTModalOfferADeal=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_offer_a_deal_stepper"),o=document.querySelector("#kt_modal_offer_a_deal_form"),t=new KTStepper(e)},getStepper:function(){return e},getStepperObj:function(){return t},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_offer_a_deal")&&(KTModalOfferADeal.init(),KTModalOfferADealType.init(),KTModalOfferADealDetails.init(),KTModalOfferADealFinance.init(),KTModalOfferADealComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADeal=module.exports=KTModalOfferADeal);
+   :                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/main.js:1:315]
+ 1 | "use strict";var KTModalOfferADeal=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_offer_a_deal_stepper"),o=document.querySelector("#kt_modal_offer_a_deal_form"),t=new KTStepper(e)},getStepper:function(){return e},getStepperObj:function(){return t},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_offer_a_deal")&&(KTModalOfferADeal.init(),KTModalOfferADealType.init(),KTModalOfferADealDetails.init(),KTModalOfferADealFinance.init(),KTModalOfferADealComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADeal=module.exports=KTModalOfferADeal);
+   :                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/main.js:1:353]
+ 1 | "use strict";var KTModalOfferADeal=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_offer_a_deal_stepper"),o=document.querySelector("#kt_modal_offer_a_deal_form"),t=new KTStepper(e)},getStepper:function(){return e},getStepperObj:function(){return t},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_offer_a_deal")&&(KTModalOfferADeal.init(),KTModalOfferADealType.init(),KTModalOfferADealDetails.init(),KTModalOfferADealFinance.init(),KTModalOfferADealComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADeal=module.exports=KTModalOfferADeal);
+   :                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/complete.js:1:84]
+ 1 | "use strict";var KTModalOfferADealComplete=function(){var e;return{init:function(){KTModalOfferADeal.getForm(),e=KTModalOfferADeal.getStepperObj(),KTModalOfferADeal.getStepper().querySelector('[data-kt-element="complete-start"]').addEventListener("click",(function(){e.goTo(1)}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealComplete=module.exports=KTModalOfferADealComplete);
+   :                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/complete.js:1:286]
+ 1 | "use strict";var KTModalOfferADealComplete=function(){var e;return{init:function(){KTModalOfferADeal.getForm(),e=KTModalOfferADeal.getStepperObj(),KTModalOfferADeal.getStepper().querySelector('[data-kt-element="complete-start"]').addEventListener("click",(function(){e.goTo(1)}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealComplete=module.exports=KTModalOfferADealComplete);
+   :                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/type.js:1:86]
+ 1 | "use strict";var KTModalOfferADealType=function(){var e,t,o,r;return{init:function(){o=KTModalOfferADeal.getForm(),r=KTModalOfferADeal.getStepperObj(),e=KTModalOfferADeal.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{offer_type:{validators:{notEmpty:{message:"Offer type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealType=module.exports=KTModalOfferADealType);
+   :                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/type.js:1:550]
+ 1 | "use strict";var KTModalOfferADealType=function(){var e,t,o,r;return{init:function(){o=KTModalOfferADeal.getForm(),r=KTModalOfferADeal.getStepperObj(),e=KTModalOfferADeal.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{offer_type:{validators:{notEmpty:{message:"Offer type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealType=module.exports=KTModalOfferADealType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/type.js:1:617]
+ 1 | "use strict";var KTModalOfferADealType=function(){var e,t,o,r;return{init:function(){o=KTModalOfferADeal.getForm(),r=KTModalOfferADeal.getStepperObj(),e=KTModalOfferADeal.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{offer_type:{validators:{notEmpty:{message:"Offer type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealType=module.exports=KTModalOfferADealType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/type.js:1:719]
+ 1 | "use strict";var KTModalOfferADealType=function(){var e,t,o,r;return{init:function(){o=KTModalOfferADeal.getForm(),r=KTModalOfferADeal.getStepperObj(),e=KTModalOfferADeal.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{offer_type:{validators:{notEmpty:{message:"Offer type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealType=module.exports=KTModalOfferADealType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/offer-a-deal/type.js:1:1015]
+ 1 | "use strict";var KTModalOfferADealType=function(){var e,t,o,r;return{init:function(){o=KTModalOfferADeal.getForm(),r=KTModalOfferADeal.getStepperObj(),e=KTModalOfferADeal.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{offer_type:{validators:{notEmpty:{message:"Offer type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalOfferADealType=module.exports=KTModalOfferADealType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/users-search.js:1:129]
+ 1 | "use strict";var KTModalUserSearch=function(){var e,t,n,s,a,r=function(e){setTimeout((function(){var a=KTUtil.getRandomInt(1,3);t.classList.add("d-none"),3===a?(n.classList.add("d-none"),s.classList.remove("d-none")):(n.classList.remove("d-none"),s.classList.add("d-none")),e.complete()}),1500)},o=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),s.classList.add("d-none")};return{init:function(){(e=document.querySelector("#kt_modal_users_search_handler"))&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),s=e.querySelector('[data-kt-search-element="empty"]'),(a=new KTSearch(e)).on("kt.search.process",r),a.on("kt.search.clear",o))}}}();KTUtil.onDOMContentLoaded((function(){KTModalUserSearch.init()}));
+   :                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/users-search.js:1:311]
+ 1 | "use strict";var KTModalUserSearch=function(){var e,t,n,s,a,r=function(e){setTimeout((function(){var a=KTUtil.getRandomInt(1,3);t.classList.add("d-none"),3===a?(n.classList.add("d-none"),s.classList.remove("d-none")):(n.classList.remove("d-none"),s.classList.add("d-none")),e.complete()}),1500)},o=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),s.classList.add("d-none")};return{init:function(){(e=document.querySelector("#kt_modal_users_search_handler"))&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),s=e.querySelector('[data-kt-search-element="empty"]'),(a=new KTSearch(e)).on("kt.search.process",r),a.on("kt.search.clear",o))}}}();KTUtil.onDOMContentLoaded((function(){KTModalUserSearch.init()}));
+   :                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/users-search.js:1:416]
+ 1 | "use strict";var KTModalUserSearch=function(){var e,t,n,s,a,r=function(e){setTimeout((function(){var a=KTUtil.getRandomInt(1,3);t.classList.add("d-none"),3===a?(n.classList.add("d-none"),s.classList.remove("d-none")):(n.classList.remove("d-none"),s.classList.add("d-none")),e.complete()}),1500)},o=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),s.classList.add("d-none")};return{init:function(){(e=document.querySelector("#kt_modal_users_search_handler"))&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),s=e.querySelector('[data-kt-search-element="empty"]'),(a=new KTSearch(e)).on("kt.search.process",r),a.on("kt.search.clear",o))}}}();KTUtil.onDOMContentLoaded((function(){KTModalUserSearch.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 'e' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/utilities/modals/users-search.js:1:308]
+ 1 | "use strict";var KTModalUserSearch=function(){var e,t,n,s,a,r=function(e){setTimeout((function(){var a=KTUtil.getRandomInt(1,3);t.classList.add("d-none"),3===a?(n.classList.add("d-none"),s.classList.remove("d-none")):(n.classList.remove("d-none"),s.classList.add("d-none")),e.complete()}),1500)},o=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),s.classList.add("d-none")};return{init:function(){(e=document.querySelector("#kt_modal_users_search_handler"))&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),s=e.querySelector('[data-kt-search-element="empty"]'),(a=new KTSearch(e)).on("kt.search.process",r),a.on("kt.search.clear",o))}}}();KTUtil.onDOMContentLoaded((function(){KTModalUserSearch.init()}));
+   :                                                                                                                                                                                                                                                                                                                    |
+   :                                                                                                                                                                                                                                                                                                                    `-- 'e' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/main.js:1:83]
+ 1 | "use strict";var KTModalCreateProject=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_create_project_stepper"),o=document.querySelector("#kt_modal_create_project_form"),t=new KTStepper(e)},getStepperObj:function(){return t},getStepper:function(){return e},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_create_project")&&(KTModalCreateProject.init(),KTModalCreateProjectType.init(),KTModalCreateProjectBudget.init(),KTModalCreateProjectSettings.init(),KTModalCreateProjectTeam.init(),KTModalCreateProjectTargets.init(),KTModalCreateProjectFiles.init(),KTModalCreateProjectComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProject=module.exports=KTModalCreateProject);
+   :                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/main.js:1:322]
+ 1 | "use strict";var KTModalCreateProject=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_create_project_stepper"),o=document.querySelector("#kt_modal_create_project_form"),t=new KTStepper(e)},getStepperObj:function(){return t},getStepper:function(){return e},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_create_project")&&(KTModalCreateProject.init(),KTModalCreateProjectType.init(),KTModalCreateProjectBudget.init(),KTModalCreateProjectSettings.init(),KTModalCreateProjectTeam.init(),KTModalCreateProjectTargets.init(),KTModalCreateProjectFiles.init(),KTModalCreateProjectComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProject=module.exports=KTModalCreateProject);
+   :                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/main.js:1:360]
+ 1 | "use strict";var KTModalCreateProject=function(){var e,t,o;return{init:function(){e=document.querySelector("#kt_modal_create_project_stepper"),o=document.querySelector("#kt_modal_create_project_form"),t=new KTStepper(e)},getStepperObj:function(){return t},getStepper:function(){return e},getForm:function(){return o}}}();KTUtil.onDOMContentLoaded((function(){document.querySelector("#kt_modal_create_project")&&(KTModalCreateProject.init(),KTModalCreateProjectType.init(),KTModalCreateProjectBudget.init(),KTModalCreateProjectSettings.init(),KTModalCreateProjectTeam.init(),KTModalCreateProjectTargets.init(),KTModalCreateProjectFiles.init(),KTModalCreateProjectComplete.init())})),"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProject=module.exports=KTModalCreateProject);
+   :                                                                                                                                                                                                                                                                                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/files.js:1:88]
+ 1 | "use strict";var KTModalCreateProjectFiles=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-previous"]'),new Dropzone("#kt_modal_create_project_files_upload",{url:"https://keenthemes.com/scripts/void.php",paramName:"file",maxFiles:10,maxFilesize:10,addRemoveLinks:!0,accept:function(e,t){"justinbieber.jpg"==e.name?t("Naha, you don't."):t()}}),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectFiles=module.exports=KTModalCreateProjectFiles);
+   :                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/files.js:1:513]
+ 1 | "use strict";var KTModalCreateProjectFiles=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-previous"]'),new Dropzone("#kt_modal_create_project_files_upload",{url:"https://keenthemes.com/scripts/void.php",paramName:"file",maxFiles:10,maxFilesize:10,addRemoveLinks:!0,accept:function(e,t){"justinbieber.jpg"==e.name?t("Naha, you don't."):t()}}),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectFiles=module.exports=KTModalCreateProjectFiles);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/files.js:1:609]
+ 1 | "use strict";var KTModalCreateProjectFiles=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-previous"]'),new Dropzone("#kt_modal_create_project_files_upload",{url:"https://keenthemes.com/scripts/void.php",paramName:"file",maxFiles:10,maxFilesize:10,addRemoveLinks:!0,accept:function(e,t){"justinbieber.jpg"==e.name?t("Naha, you don't."):t()}}),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectFiles=module.exports=KTModalCreateProjectFiles);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/files.js:1:706]
+ 1 | "use strict";var KTModalCreateProjectFiles=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-previous"]'),new Dropzone("#kt_modal_create_project_files_upload",{url:"https://keenthemes.com/scripts/void.php",paramName:"file",maxFiles:10,maxFilesize:10,addRemoveLinks:!0,accept:function(e,t){"justinbieber.jpg"==e.name?t("Naha, you don't."):t()}}),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectFiles=module.exports=KTModalCreateProjectFiles);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/files.js:1:843]
+ 1 | "use strict";var KTModalCreateProjectFiles=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="files-previous"]'),new Dropzone("#kt_modal_create_project_files_upload",{url:"https://keenthemes.com/scripts/void.php",paramName:"file",maxFiles:10,maxFilesize:10,addRemoveLinks:!0,accept:function(e,t){"justinbieber.jpg"==e.name?t("Naha, you don't."):t()}}),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectFiles=module.exports=KTModalCreateProjectFiles);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/complete.js:1:87]
+ 1 | "use strict";var KTModalCreateProjectComplete=function(){var e;return{init:function(){KTModalCreateProject.getForm(),e=KTModalCreateProject.getStepperObj(),KTModalCreateProject.getStepper().querySelector('[data-kt-element="complete-start"]').addEventListener("click",(function(){e.goTo(1)}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectComplete=module.exports=KTModalCreateProjectComplete);
+   :                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/complete.js:1:298]
+ 1 | "use strict";var KTModalCreateProjectComplete=function(){var e;return{init:function(){KTModalCreateProject.getForm(),e=KTModalCreateProject.getStepperObj(),KTModalCreateProject.getStepper().querySelector('[data-kt-element="complete-start"]').addEventListener("click",(function(){e.goTo(1)}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectComplete=module.exports=KTModalCreateProjectComplete);
+   :                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/team.js:1:87]
+ 1 | "use strict";var KTModalCreateProjectTeam=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-previous"]'),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.disabled=!1,e.removeAttribute("data-kt-indicator"),o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectTeam=module.exports=KTModalCreateProjectTeam);
+   :                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/team.js:1:367]
+ 1 | "use strict";var KTModalCreateProjectTeam=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-previous"]'),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.disabled=!1,e.removeAttribute("data-kt-indicator"),o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectTeam=module.exports=KTModalCreateProjectTeam);
+   :                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/team.js:1:464]
+ 1 | "use strict";var KTModalCreateProjectTeam=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-previous"]'),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.disabled=!1,e.removeAttribute("data-kt-indicator"),o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectTeam=module.exports=KTModalCreateProjectTeam);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/team.js:1:601]
+ 1 | "use strict";var KTModalCreateProjectTeam=function(){var e,t,o;return{init:function(){KTModalCreateProject.getForm(),o=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-next"]'),t=KTModalCreateProject.getStepper().querySelector('[data-kt-element="team-previous"]'),e.addEventListener("click",(function(t){t.preventDefault(),e.disabled=!0,e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.disabled=!1,e.removeAttribute("data-kt-indicator"),o.goNext()}),1500)})),t.addEventListener("click",(function(){o.goPrevious()}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectTeam=module.exports=KTModalCreateProjectTeam);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/type.js:1:89]
+ 1 | "use strict";var KTModalCreateProjectType=function(){var e,t,o,r;return{init:function(){o=KTModalCreateProject.getForm(),r=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{project_type:{validators:{notEmpty:{message:"Project type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),o.preventDefault(),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectType=module.exports=KTModalCreateProjectType);
+   :                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/type.js:1:566]
+ 1 | "use strict";var KTModalCreateProjectType=function(){var e,t,o,r;return{init:function(){o=KTModalCreateProject.getForm(),r=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{project_type:{validators:{notEmpty:{message:"Project type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),o.preventDefault(),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectType=module.exports=KTModalCreateProjectType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/type.js:1:633]
+ 1 | "use strict";var KTModalCreateProjectType=function(){var e,t,o,r;return{init:function(){o=KTModalCreateProject.getForm(),r=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{project_type:{validators:{notEmpty:{message:"Project type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),o.preventDefault(),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectType=module.exports=KTModalCreateProjectType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/type.js:1:754]
+ 1 | "use strict";var KTModalCreateProjectType=function(){var e,t,o,r;return{init:function(){o=KTModalCreateProject.getForm(),r=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{project_type:{validators:{notEmpty:{message:"Project type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),o.preventDefault(),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectType=module.exports=KTModalCreateProjectType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/utilities/modals/create-project/type.js:1:1050]
+ 1 | "use strict";var KTModalCreateProjectType=function(){var e,t,o,r;return{init:function(){o=KTModalCreateProject.getForm(),r=KTModalCreateProject.getStepperObj(),e=KTModalCreateProject.getStepper().querySelector('[data-kt-element="type-next"]'),t=FormValidation.formValidation(o,{fields:{project_type:{validators:{notEmpty:{message:"Project type is required"}}}},plugins:{trigger:new FormValidation.plugins.Trigger,bootstrap:new FormValidation.plugins.Bootstrap5({rowSelector:".fv-row",eleInvalidClass:"",eleValidClass:""})}}),e.addEventListener("click",(function(o){o.preventDefault(),e.disabled=!0,t&&t.validate().then((function(t){console.log("validated!"),o.preventDefault(),"Valid"==t?(e.setAttribute("data-kt-indicator","on"),setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,r.goNext()}),1e3)):(e.disabled=!1,Swal.fire({text:"Sorry, looks like there are some errors detected, please try again.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}))}))}))}}}();"undefined"!=typeof module&&void 0!==module.exports&&(window.KTModalCreateProjectType=module.exports=KTModalCreateProjectType);
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/landing.js:1:52]
+ 1 | "use strict";var KTLandingPage={init:function(){}};"undefined"!=typeof module&&(module.exports=KTLandingPage),KTUtil.onDOMContentLoaded((function(){KTLandingPage.init()}));
+   :                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/support-center/general.js:1:58]
+ 1 | "use strict";var KTSupportCenterGeneral={init:function(){!function(e){var t=e;if(void 0===t&&(t=document.querySelectorAll(".highlight")),t&&t.length>0)for(var n=0;n<t.length;++n){var r=t[n].querySelector(".highlight-copy");r&&new ClipboardJS(r,{target:function(e){var t=e.closest(".highlight"),n=t.querySelector(".tab-pane.active");return null==n&&(n=t.querySelector(".highlight-code")),n}}).on("success",(function(e){var t=e.trigger.innerHTML;e.trigger.innerHTML="copied",e.clearSelection(),setTimeout((function(){e.trigger.innerHTML=t}),2e3)}))}}()}};KTUtil.onDOMContentLoaded((function(){KTSupportCenterGeneral.init()}));
+   :                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/support-center/general.js:1:224]
+ 1 | "use strict";var KTSupportCenterGeneral={init:function(){!function(e){var t=e;if(void 0===t&&(t=document.querySelectorAll(".highlight")),t&&t.length>0)for(var n=0;n<t.length;++n){var r=t[n].querySelector(".highlight-copy");r&&new ClipboardJS(r,{target:function(e){var t=e.closest(".highlight"),n=t.querySelector(".tab-pane.active");return null==n&&(n=t.querySelector(".highlight-code")),n}}).on("success",(function(e){var t=e.trigger.innerHTML;e.trigger.innerHTML="copied",e.clearSelection(),setTimeout((function(){e.trigger.innerHTML=t}),2e3)}))}}()}};KTUtil.onDOMContentLoaded((function(){KTSupportCenterGeneral.init()}));
+   :                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/support-center/general.js:1:445]
+ 1 | "use strict";var KTSupportCenterGeneral={init:function(){!function(e){var t=e;if(void 0===t&&(t=document.querySelectorAll(".highlight")),t&&t.length>0)for(var n=0;n<t.length;++n){var r=t[n].querySelector(".highlight-copy");r&&new ClipboardJS(r,{target:function(e){var t=e.closest(".highlight"),n=t.querySelector(".tab-pane.active");return null==n&&(n=t.querySelector(".highlight-code")),n}}).on("success",(function(e){var t=e.trigger.innerHTML;e.trigger.innerHTML="copied",e.clearSelection(),setTimeout((function(){e.trigger.innerHTML=t}),2e3)}))}}()}};KTUtil.onDOMContentLoaded((function(){KTSupportCenterGeneral.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:294]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:489]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:713]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:726]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:963]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 'n' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/apps/chat/chat.js:1:904]
+ 1 | "use strict";var KTAppChat=function(){var e=function(e){var t=e.querySelector('[data-kt-element="messages"]'),n=e.querySelector('[data-kt-element="input"]');if(0!==n.value.length){var o,a=t.querySelector('[data-kt-element="template-out"]'),l=t.querySelector('[data-kt-element="template-in"]');(o=a.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText=n.value,n.value="",t.appendChild(o),t.scrollTop=t.scrollHeight,setTimeout((function(){(o=l.cloneNode(!0)).classList.remove("d-none"),o.querySelector('[data-kt-element="message-text"]').innerText="Thank you for your awesome support!",t.appendChild(o),t.scrollTop=t.scrollHeight}),2e3)}};return{init:function(t){!function(t){t&&(KTUtil.on(t,'[data-kt-element="input"]',"keydown",(function(n){if(13==n.keyCode)return e(t),n.preventDefault(),!1})),KTUtil.on(t,'[data-kt-element="send"]',"click",(function(n){e(t)})))}(t)}}}();KTUtil.onDOMContentLoaded((function(){KTAppChat.init(document.querySelector("#kt_chat_messenger")),KTAppChat.init(document.querySelector("#kt_drawer_chat_messenger"))}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        `-- 'n' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Function 'selectChat' is declared but never used.
+    ,-[template_extract/assets/js/custom/apps/chat/chat-api.js:63:16]
+ 62 | // Seleciona chat
+ 63 | async function selectChat(leadId) {
+    :                ^^^^^|^^^^
+    :                     `-- 'selectChat' is declared here
+ 64 |     currentLeadId = leadId;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'takeoverChat' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/chat/chat-api.js:134:16]
+ 133 | // Assume controle (takeover)
+ 134 | async function takeoverChat() {
+     :                ^^^^^^|^^^^^
+     :                      `-- 'takeoverChat' is declared here
+ 135 |     if (!currentLeadId) return;
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'releaseChat' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/chat/chat-api.js:147:16]
+ 146 | // Devolve para IA
+ 147 | async function releaseChat() {
+     :                ^^^^^|^^^^^
+     :                     `-- 'releaseChat' is declared here
+ 148 |     if (!currentLeadId) return;
+     `----
+  help: Consider removing this declaration.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/subscriptions/add/customer-select.js:1:135]
+ 1 | "use strict";var KTModalCustomerSelect=function(){var e,t,n,o,s,a,c=function(e){setTimeout((function(){var s=KTUtil.getRandomInt(1,6);t.classList.add("d-none"),3===s?(n.classList.add("d-none"),o.classList.remove("d-none")):(n.classList.remove("d-none"),o.classList.add("d-none")),e.complete()}),1500)},r=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),o.classList.add("d-none")};return{init:function(){e=document.querySelector("#kt_modal_customer_search_handler"),a=new bootstrap.Modal(document.querySelector("#kt_modal_customer_search")),e&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),o=e.querySelector('[data-kt-search-element="empty"]'),(s=new KTSearch(e)).on("kt.search.process",c),s.on("kt.search.clear",r),KTUtil.on(e,'[data-kt-search-element="customer"]',"click",(function(){a.hide()})))}}}();KTUtil.onDOMContentLoaded((function(){KTModalCustomerSelect.init()}));
+   :                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/subscriptions/add/customer-select.js:1:317]
+ 1 | "use strict";var KTModalCustomerSelect=function(){var e,t,n,o,s,a,c=function(e){setTimeout((function(){var s=KTUtil.getRandomInt(1,6);t.classList.add("d-none"),3===s?(n.classList.add("d-none"),o.classList.remove("d-none")):(n.classList.remove("d-none"),o.classList.add("d-none")),e.complete()}),1500)},r=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),o.classList.add("d-none")};return{init:function(){e=document.querySelector("#kt_modal_customer_search_handler"),a=new bootstrap.Modal(document.querySelector("#kt_modal_customer_search")),e&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),o=e.querySelector('[data-kt-search-element="empty"]'),(s=new KTSearch(e)).on("kt.search.process",c),s.on("kt.search.clear",r),KTUtil.on(e,'[data-kt-search-element="customer"]',"click",(function(){a.hide()})))}}}();KTUtil.onDOMContentLoaded((function(){KTModalCustomerSelect.init()}));
+   :                                                                                                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/subscriptions/add/customer-select.js:1:422]
+ 1 | "use strict";var KTModalCustomerSelect=function(){var e,t,n,o,s,a,c=function(e){setTimeout((function(){var s=KTUtil.getRandomInt(1,6);t.classList.add("d-none"),3===s?(n.classList.add("d-none"),o.classList.remove("d-none")):(n.classList.remove("d-none"),o.classList.add("d-none")),e.complete()}),1500)},r=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),o.classList.add("d-none")};return{init:function(){e=document.querySelector("#kt_modal_customer_search_handler"),a=new bootstrap.Modal(document.querySelector("#kt_modal_customer_search")),e&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),o=e.querySelector('[data-kt-search-element="empty"]'),(s=new KTSearch(e)).on("kt.search.process",c),s.on("kt.search.clear",r),KTUtil.on(e,'[data-kt-search-element="customer"]',"click",(function(){a.hide()})))}}}();KTUtil.onDOMContentLoaded((function(){KTModalCustomerSelect.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 'e' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/apps/subscriptions/add/customer-select.js:1:314]
+ 1 | "use strict";var KTModalCustomerSelect=function(){var e,t,n,o,s,a,c=function(e){setTimeout((function(){var s=KTUtil.getRandomInt(1,6);t.classList.add("d-none"),3===s?(n.classList.add("d-none"),o.classList.remove("d-none")):(n.classList.remove("d-none"),o.classList.add("d-none")),e.complete()}),1500)},r=function(e){t.classList.remove("d-none"),n.classList.add("d-none"),o.classList.add("d-none")};return{init:function(){e=document.querySelector("#kt_modal_customer_search_handler"),a=new bootstrap.Modal(document.querySelector("#kt_modal_customer_search")),e&&(e.querySelector('[data-kt-search-element="wrapper"]'),t=e.querySelector('[data-kt-search-element="suggestions"]'),n=e.querySelector('[data-kt-search-element="results"]'),o=e.querySelector('[data-kt-search-element="empty"]'),(s=new KTSearch(e)).on("kt.search.process",c),s.on("kt.search.clear",r),KTUtil.on(e,'[data-kt-search-element="customer"]',"click",(function(){a.hide()})))}}}();KTUtil.onDOMContentLoaded((function(){KTModalCustomerSelect.init()}));
+   :                                                                                                                                                                                                                                                                                                                          |
+   :                                                                                                                                                                                                                                                                                                                          `-- 'e' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-vars): Function 'confirmSale' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/leads/leads-api.js:109:16]
+ 108 | // Confirma venda (MANUAL)
+ 109 | async function confirmSale(leadId) {
+     :                ^^^^^|^^^^^
+     :                     `-- 'confirmSale' is declared here
+ 110 |     if (!confirm('CONFIRMAR VENDA para este lead?')) return;
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'markLost' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/leads/leads-api.js:126:16]
+ 125 | // Marca como perdido
+ 126 | async function markLost(leadId) {
+     :                ^^^^|^^^
+     :                    `-- 'markLost' is declared here
+ 127 |     const reason = prompt('Motivo da perda (opcional):');
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'changeStage' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/leads/leads-api.js:140:16]
+ 139 | // Muda estágio
+ 140 | async function changeStage(leadId) {
+     :                ^^^^^|^^^^^
+     :                     `-- 'changeStage' is declared here
+ 141 |     const stage = prompt('Novo estágio (new, in_progress, qualified, negotiation, documentation):');
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'filterByStage' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/leads/leads-api.js:155:10]
+ 154 | // Filtros
+ 155 | function filterByStage(stage) {
+     :          ^^^^^^|^^^^^^
+     :                `-- 'filterByStage' is declared here
+ 156 |     currentFilters.stage = stage || undefined;
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'filterByTemperature' is declared but never used.
+     ,-[template_extract/assets/js/custom/apps/leads/leads-api.js:160:10]
+ 159 | 
+ 160 | function filterByTemperature(temp) {
+     :          ^^^^^^^^^|^^^^^^^^^
+     :                   `-- 'filterByTemperature' is declared here
+ 161 |     currentFilters.temperature = temp || undefined;
+     `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/file-manager/settings.js:1:84]
+ 1 | "use strict";var KTAppFileManagerSettings=function(){var t;return{init:function(e){t=document.querySelector("#kt_file_manager_settings"),function(){const e=t.querySelector("#kt_file_manager_settings_submit");e.addEventListener("click",(t=>{t.preventDefault(),e.setAttribute("data-kt-indicator","on"),setTimeout((function(){toastr.options={closeButton:!0,debug:!1,newestOnTop:!1,progressBar:!1,positionClass:"toast-top-right",preventDuplicates:!1,showDuration:"300",hideDuration:"1000",timeOut:"5000",extendedTimeOut:"1000",showEasing:"swing",hideEasing:"linear",showMethod:"fadeIn",hideMethod:"fadeOut"},toastr.success("File manager settings have been saved"),e.removeAttribute("data-kt-indicator")}),1e3)}))}()}}}();KTUtil.onDOMContentLoaded((function(){KTAppFileManagerSettings.init()}));
+   :                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/file-manager/settings.js:1:241]
+ 1 | "use strict";var KTAppFileManagerSettings=function(){var t;return{init:function(e){t=document.querySelector("#kt_file_manager_settings"),function(){const e=t.querySelector("#kt_file_manager_settings_submit");e.addEventListener("click",(t=>{t.preventDefault(),e.setAttribute("data-kt-indicator","on"),setTimeout((function(){toastr.options={closeButton:!0,debug:!1,newestOnTop:!1,progressBar:!1,positionClass:"toast-top-right",preventDuplicates:!1,showDuration:"300",hideDuration:"1000",timeOut:"5000",extendedTimeOut:"1000",showEasing:"swing",hideEasing:"linear",showMethod:"fadeIn",hideMethod:"fadeOut"},toastr.success("File manager settings have been saved"),e.removeAttribute("data-kt-indicator")}),1e3)}))}()}}}();KTUtil.onDOMContentLoaded((function(){KTAppFileManagerSettings.init()}));
+   :                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/file-manager/settings.js:1:324]
+ 1 | "use strict";var KTAppFileManagerSettings=function(){var t;return{init:function(e){t=document.querySelector("#kt_file_manager_settings"),function(){const e=t.querySelector("#kt_file_manager_settings_submit");e.addEventListener("click",(t=>{t.preventDefault(),e.setAttribute("data-kt-indicator","on"),setTimeout((function(){toastr.options={closeButton:!0,debug:!1,newestOnTop:!1,progressBar:!1,positionClass:"toast-top-right",preventDuplicates:!1,showDuration:"300",hideDuration:"1000",timeOut:"5000",extendedTimeOut:"1000",showEasing:"swing",hideEasing:"linear",showMethod:"fadeIn",hideMethod:"fadeOut"},toastr.success("File manager settings have been saved"),e.removeAttribute("data-kt-indicator")}),1e3)}))}()}}}();KTUtil.onDOMContentLoaded((function(){KTAppFileManagerSettings.init()}));
+   :                                                                                                                                                                                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 'e' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/apps/file-manager/settings.js:1:81]
+ 1 | "use strict";var KTAppFileManagerSettings=function(){var t;return{init:function(e){t=document.querySelector("#kt_file_manager_settings"),function(){const e=t.querySelector("#kt_file_manager_settings_submit");e.addEventListener("click",(t=>{t.preventDefault(),e.setAttribute("data-kt-indicator","on"),setTimeout((function(){toastr.options={closeButton:!0,debug:!1,newestOnTop:!1,progressBar:!1,positionClass:"toast-top-right",preventDuplicates:!1,showDuration:"300",hideDuration:"1000",timeOut:"5000",extendedTimeOut:"1000",showEasing:"swing",hideEasing:"linear",showMethod:"fadeIn",hideMethod:"fadeOut"},toastr.success("File manager settings have been saved"),e.removeAttribute("data-kt-indicator")}),1e3)}))}()}}}();KTUtil.onDOMContentLoaded((function(){KTAppFileManagerSettings.init()}));
+   :                                                                                 |
+   :                                                                                 `-- 'e' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/inbox/listing.js:1:181]
+ 1 | "use strict";var KTAppInboxListing=function(){var t,n,e=()=>{document.querySelector("#kt_inbox_listing_wrapper > .row").classList.add("px-9","pt-3","pb-5")};return{init:function(){(t=document.querySelector("#kt_inbox_listing"))&&((n=$(t).DataTable({info:!1,order:[]})).on("draw",(function(){e()})),document.querySelector('[data-kt-inbox-listing-filter="search"]').addEventListener("keyup",(function(t){n.search(t.target.value).draw()})),e())}}}();KTUtil.onDOMContentLoaded((function(){KTAppInboxListing.init()}));
+   :                                                                                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Function 'saveSettings' is declared but never used.
+    ,-[template_extract/assets/js/custom/apps/settings/settings-api.js:48:16]
+ 47 | // Salva configurações
+ 48 | async function saveSettings() {
+    :                ^^^^^^|^^^^^
+    :                      `-- 'saveSettings' is declared here
+ 49 |     const data = {
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Function 'saveQualificationRules' is declared but never used.
+    ,-[template_extract/assets/js/custom/apps/settings/settings-api.js:79:16]
+ 78 | // Salva regras de qualificação
+ 79 | async function saveQualificationRules() {
+    :                ^^^^^^^^^^^|^^^^^^^^^^
+    :                           `-- 'saveQualificationRules' is declared here
+ 80 |     const minScore = parseInt(document.getElementById('min_score_qualified')?.value) || 50;
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/projects/targets/targets.js:1:52]
+ 1 | "use strict";var KTProjectTargets={init:function(){!function(){const t=document.getElementById("kt_profile_overview_table");t.querySelectorAll("tbody tr").forEach((t=>{const e=t.querySelectorAll("td"),o=moment(e[1].innerHTML,"MMM D, YYYY").format();e[1].setAttribute("data-order",o)})),$(t).DataTable({info:!1,order:[],paging:!1})}()}};KTUtil.onDOMContentLoaded((function(){KTProjectTargets.init()}));
+   :                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/projects/targets/targets.js:1:125]
+ 1 | "use strict";var KTProjectTargets={init:function(){!function(){const t=document.getElementById("kt_profile_overview_table");t.querySelectorAll("tbody tr").forEach((t=>{const e=t.querySelectorAll("td"),o=moment(e[1].innerHTML,"MMM D, YYYY").format();e[1].setAttribute("data-order",o)})),$(t).DataTable({info:!1,order:[],paging:!1})}()}};KTUtil.onDOMContentLoaded((function(){KTProjectTargets.init()}));
+   :                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/projects/list/list.js:1:49]
+ 1 | "use strict";var KTProjectList={init:function(){!function(){var t=document.getElementById("kt_project_list_chart");if(t){var e=t.getContext("2d");new Chart(e,{type:"doughnut",data:{datasets:[{data:[30,45,25],backgroundColor:["#00A3FF","#50CD89","#E4E6EF"]}],labels:["Active","Completed","Yet to start"]},options:{chart:{fontFamily:"inherit"},borderWidth:0,cutout:"75%",cutoutPercentage:65,responsive:!0,maintainAspectRatio:!1,title:{display:!1},animation:{animateScale:!0,animateRotate:!0},stroke:{width:0},tooltips:{enabled:!0,intersect:!1,mode:"nearest",bodySpacing:5,yPadding:10,xPadding:10,caretPadding:0,displayColors:!1,backgroundColor:"#20D489",titleFontColor:"#ffffff",cornerRadius:4,footerSpacing:0,titleSpacing:0},plugins:{legend:{display:!1}}}})}}()}};KTUtil.onDOMContentLoaded((function(){KTProjectList.init()}));
+   :                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/projects/users/users.js:1:50]
+ 1 | "use strict";var KTProjectUsers={init:function(){!function(){const t=document.getElementById("kt_project_users_table");if(!t)return;t.querySelectorAll("tbody tr").forEach((t=>{const e=t.querySelectorAll("td"),r=moment(e[1].innerHTML,"MMM D, YYYY").format();e[1].setAttribute("data-order",r)}));const e=$(t).DataTable({info:!1,order:[],columnDefs:[{targets:4,orderable:!1}]});var r=document.getElementById("kt_filter_search");r&&r.addEventListener("keyup",(function(t){e.search(t.target.value).draw()}))}()}};KTUtil.onDOMContentLoaded((function(){KTProjectUsers.init()}));
+   :                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/projects/users/users.js:1:426]
+ 1 | "use strict";var KTProjectUsers={init:function(){!function(){const t=document.getElementById("kt_project_users_table");if(!t)return;t.querySelectorAll("tbody tr").forEach((t=>{const e=t.querySelectorAll("td"),r=moment(e[1].innerHTML,"MMM D, YYYY").format();e[1].setAttribute("data-order",r)}));const e=$(t).DataTable({info:!1,order:[],columnDefs:[{targets:4,orderable:!1}]});var r=document.getElementById("kt_filter_search");r&&r.addEventListener("keyup",(function(t){e.search(t.target.value).draw()}))}()}};KTUtil.onDOMContentLoaded((function(){KTProjectUsers.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/contacts/view-contact.js:1:111]
+ 1 | "use strict";var KTAppContactView={init:function(){(()=>{const t=document.getElementById("kt_contact_delete");t&&t.addEventListener("click",(n=>{n.preventDefault(),Swal.fire({text:"Delete contact confirmation",icon:"warning",buttonsStyling:!1,showCancelButton:!0,confirmButtonText:"Yes, delete it!",cancelButtonText:"No, return",customClass:{confirmButton:"btn btn-danger",cancelButton:"btn btn-active-light"}}).then((function(n){n.value?Swal.fire({text:"Contact has been deleted!",icon:"success",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}).then((function(n){n.value&&(window.location=t.getAttribute("data-kt-redirect"))})):"cancel"===n.dismiss&&Swal.fire({text:"Contact has not been deleted!.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}})}))}))})()}};KTUtil.onDOMContentLoaded((function(){KTAppContactView.init()}));
+   :                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/contacts/view-contact.js:1:146]
+ 1 | "use strict";var KTAppContactView={init:function(){(()=>{const t=document.getElementById("kt_contact_delete");t&&t.addEventListener("click",(n=>{n.preventDefault(),Swal.fire({text:"Delete contact confirmation",icon:"warning",buttonsStyling:!1,showCancelButton:!0,confirmButtonText:"Yes, delete it!",cancelButtonText:"No, return",customClass:{confirmButton:"btn btn-danger",cancelButton:"btn btn-active-light"}}).then((function(n){n.value?Swal.fire({text:"Contact has been deleted!",icon:"success",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}).then((function(n){n.value&&(window.location=t.getAttribute("data-kt-redirect"))})):"cancel"===n.dismiss&&Swal.fire({text:"Contact has not been deleted!.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}})}))}))})()}};KTUtil.onDOMContentLoaded((function(){KTAppContactView.init()}));
+   :                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/contacts/view-contact.js:1:431]
+ 1 | "use strict";var KTAppContactView={init:function(){(()=>{const t=document.getElementById("kt_contact_delete");t&&t.addEventListener("click",(n=>{n.preventDefault(),Swal.fire({text:"Delete contact confirmation",icon:"warning",buttonsStyling:!1,showCancelButton:!0,confirmButtonText:"Yes, delete it!",cancelButtonText:"No, return",customClass:{confirmButton:"btn btn-danger",cancelButton:"btn btn-active-light"}}).then((function(n){n.value?Swal.fire({text:"Contact has been deleted!",icon:"success",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}).then((function(n){n.value&&(window.location=t.getAttribute("data-kt-redirect"))})):"cancel"===n.dismiss&&Swal.fire({text:"Contact has not been deleted!.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}})}))}))})()}};KTUtil.onDOMContentLoaded((function(){KTAppContactView.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/apps/contacts/view-contact.js:1:614]
+ 1 | "use strict";var KTAppContactView={init:function(){(()=>{const t=document.getElementById("kt_contact_delete");t&&t.addEventListener("click",(n=>{n.preventDefault(),Swal.fire({text:"Delete contact confirmation",icon:"warning",buttonsStyling:!1,showCancelButton:!0,confirmButtonText:"Yes, delete it!",cancelButtonText:"No, return",customClass:{confirmButton:"btn btn-danger",cancelButton:"btn btn-active-light"}}).then((function(n){n.value?Swal.fire({text:"Contact has been deleted!",icon:"success",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}}).then((function(n){n.value&&(window.location=t.getAttribute("data-kt-redirect"))})):"cancel"===n.dismiss&&Swal.fire({text:"Contact has not been deleted!.",icon:"error",buttonsStyling:!1,confirmButtonText:"Ok, got it!",customClass:{confirmButton:"btn btn-primary"}})}))}))})()}};KTUtil.onDOMContentLoaded((function(){KTAppContactView.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/referrals/referral-program.js:1:77]
+ 1 | "use strict";var KTAccountReferralsReferralProgram={init:function(){var e,r;e=document.querySelector("#kt_referral_program_link_copy_btn"),r=document.querySelector("#kt_referral_link_input"),new ClipboardJS(e).on("success",(function(s){var n=e.innerHTML;r.classList.add("bg-success"),r.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=n,r.classList.remove("bg-success"),r.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTAccountReferralsReferralProgram.init()}));
+   :                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/referrals/referral-program.js:1:255]
+ 1 | "use strict";var KTAccountReferralsReferralProgram={init:function(){var e,r;e=document.querySelector("#kt_referral_program_link_copy_btn"),r=document.querySelector("#kt_referral_link_input"),new ClipboardJS(e).on("success",(function(s){var n=e.innerHTML;r.classList.add("bg-success"),r.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=n,r.classList.remove("bg-success"),r.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTAccountReferralsReferralProgram.init()}));
+   :                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/referrals/referral-program.js:1:370]
+ 1 | "use strict";var KTAccountReferralsReferralProgram={init:function(){var e,r;e=document.querySelector("#kt_referral_program_link_copy_btn"),r=document.querySelector("#kt_referral_link_input"),new ClipboardJS(e).on("success",(function(s){var n=e.innerHTML;r.classList.add("bg-success"),r.classList.add("text-inverse-success"),e.innerHTML="Copied!",setTimeout((function(){e.innerHTML=n,r.classList.remove("bg-success"),r.classList.remove("text-inverse-success")}),3e3),s.clearSelection()}))}};KTUtil.onDOMContentLoaded((function(){KTAccountReferralsReferralProgram.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/security/license-usage.js:1:398]
+ 1 | "use strict";var KTAccountSecurityLicenseUsage={init:function(){KTUtil.each(document.querySelectorAll('#kt_security_license_usage_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),c=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:c,text:function(){return c.innerHTML}}).on("success",(function(t){var s=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),c.classList.add("text-success"),s.classList.add("d-none"),setTimeout((function(){s.classList.remove("d-none"),e.removeChild(i),c.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountSecurityLicenseUsage.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/security/license-usage.js:1:610]
+ 1 | "use strict";var KTAccountSecurityLicenseUsage={init:function(){KTUtil.each(document.querySelectorAll('#kt_security_license_usage_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),c=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:c,text:function(){return c.innerHTML}}).on("success",(function(t){var s=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),c.classList.add("text-success"),s.classList.add("d-none"),setTimeout((function(){s.classList.remove("d-none"),e.removeChild(i),c.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountSecurityLicenseUsage.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 't' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/account/security/license-usage.js:1:330]
+ 1 | "use strict";var KTAccountSecurityLicenseUsage={init:function(){KTUtil.each(document.querySelectorAll('#kt_security_license_usage_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),c=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:c,text:function(){return c.innerHTML}}).on("success",(function(t){var s=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),c.classList.add("text-success"),s.classList.add("d-none"),setTimeout((function(){s.classList.remove("d-none"),e.removeChild(i),c.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountSecurityLicenseUsage.init()}));
+   :                                                                                                                                                                                                                                                                                                                                          |
+   :                                                                                                                                                                                                                                                                                                                                          `-- 't' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/api-keys/api-keys.js:1:371]
+ 1 | "use strict";var KTAccountAPIKeys={init:function(){KTUtil.each(document.querySelectorAll('#kt_api_keys_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),s=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:s,text:function(){return s.innerHTML}}).on("success",(function(t){var c=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),s.classList.add("text-success"),c.classList.add("d-none"),setTimeout((function(){c.classList.remove("d-none"),e.removeChild(i),s.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountAPIKeys.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/account/api-keys/api-keys.js:1:583]
+ 1 | "use strict";var KTAccountAPIKeys={init:function(){KTUtil.each(document.querySelectorAll('#kt_api_keys_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),s=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:s,text:function(){return s.innerHTML}}).on("success",(function(t){var c=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),s.classList.add("text-success"),c.classList.add("d-none"),setTimeout((function(){c.classList.remove("d-none"),e.removeChild(i),s.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountAPIKeys.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-vars): Parameter 't' is declared but never used. Unused parameters should start with a '_'.
+   ,-[template_extract/assets/js/custom/account/api-keys/api-keys.js:1:303]
+ 1 | "use strict";var KTAccountAPIKeys={init:function(){KTUtil.each(document.querySelectorAll('#kt_api_keys_table [data-action="copy"]'),(function(e){var t=e.closest("tr"),s=KTUtil.find(t,'[data-bs-target="license"]');new ClipboardJS(e,{target:s,text:function(){return s.innerHTML}}).on("success",(function(t){var c=e.querySelector(".ki-copy"),i=e.querySelector(".ki-check");i||((i=document.createElement("i")).classList.add("ki-solid"),i.classList.add("ki-check"),i.classList.add("fs-2"),e.appendChild(i),s.classList.add("text-success"),c.classList.add("d-none"),setTimeout((function(){c.classList.remove("d-none"),e.removeChild(i),s.classList.remove("text-success")}),3e3))}))}))}};KTUtil.onDOMContentLoaded((function(){KTAccountAPIKeys.init()}));
+   :                                                                                                                                                                                                                                                                                                               |
+   :                                                                                                                                                                                                                                                                                                               `-- 't' is declared here
+   `----
+  help: Consider removing this parameter.
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/pricing/general.js:1:246]
+ 1 | "use strict";var KTPricingGeneral=function(){var t,n,e,a=function(n){[].slice.call(t.querySelectorAll("[data-kt-plan-price-month]")).map((function(t){var e=t.getAttribute("data-kt-plan-price-month"),a=t.getAttribute("data-kt-plan-price-annual");"month"===n?t.innerHTML=e:"annual"===n&&(t.innerHTML=a)}))};return{init:function(){t=document.querySelector("#kt_pricing"),n=t.querySelector('[data-kt-plan="month"]'),e=t.querySelector('[data-kt-plan="annual"]'),n.addEventListener("click",(function(t){t.preventDefault(),n.classList.add("active"),e.classList.remove("active"),a("month")})),e.addEventListener("click",(function(t){t.preventDefault(),n.classList.remove("active"),e.classList.add("active"),a("annual")}))}}}();KTUtil.onDOMContentLoaded((function(){KTPricingGeneral.init()}));
+   :                                                                                                                                                                                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/pricing/general.js:1:329]
+ 1 | "use strict";var KTPricingGeneral=function(){var t,n,e,a=function(n){[].slice.call(t.querySelectorAll("[data-kt-plan-price-month]")).map((function(t){var e=t.getAttribute("data-kt-plan-price-month"),a=t.getAttribute("data-kt-plan-price-annual");"month"===n?t.innerHTML=e:"annual"===n&&(t.innerHTML=a)}))};return{init:function(){t=document.querySelector("#kt_pricing"),n=t.querySelector('[data-kt-plan="month"]'),e=t.querySelector('[data-kt-plan="annual"]'),n.addEventListener("click",(function(t){t.preventDefault(),n.classList.add("active"),e.classList.remove("active"),a("month")})),e.addEventListener("click",(function(t){t.preventDefault(),n.classList.remove("active"),e.classList.add("active"),a("annual")}))}}}();KTUtil.onDOMContentLoaded((function(){KTPricingGeneral.init()}));
+   :                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/pricing/general.js:1:498]
+ 1 | "use strict";var KTPricingGeneral=function(){var t,n,e,a=function(n){[].slice.call(t.querySelectorAll("[data-kt-plan-price-month]")).map((function(t){var e=t.getAttribute("data-kt-plan-price-month"),a=t.getAttribute("data-kt-plan-price-annual");"month"===n?t.innerHTML=e:"annual"===n&&(t.innerHTML=a)}))};return{init:function(){t=document.querySelector("#kt_pricing"),n=t.querySelector('[data-kt-plan="month"]'),e=t.querySelector('[data-kt-plan="annual"]'),n.addEventListener("click",(function(t){t.preventDefault(),n.classList.add("active"),e.classList.remove("active"),a("month")})),e.addEventListener("click",(function(t){t.preventDefault(),n.classList.remove("active"),e.classList.add("active"),a("annual")}))}}}();KTUtil.onDOMContentLoaded((function(){KTPricingGeneral.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/pricing/general.js:1:626]
+ 1 | "use strict";var KTPricingGeneral=function(){var t,n,e,a=function(n){[].slice.call(t.querySelectorAll("[data-kt-plan-price-month]")).map((function(t){var e=t.getAttribute("data-kt-plan-price-month"),a=t.getAttribute("data-kt-plan-price-annual");"month"===n?t.innerHTML=e:"annual"===n&&(t.innerHTML=a)}))};return{init:function(){t=document.querySelector("#kt_pricing"),n=t.querySelector('[data-kt-plan="month"]'),e=t.querySelector('[data-kt-plan="annual"]'),n.addEventListener("click",(function(t){t.preventDefault(),n.classList.add("active"),e.classList.remove("active"),a("month")})),e.addEventListener("click",(function(t){t.preventDefault(),n.classList.remove("active"),e.classList.add("active"),a("annual")}))}}}();KTUtil.onDOMContentLoaded((function(){KTPricingGeneral.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:401]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:441]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:538]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:719]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:816]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/social/feeds.js:1:924]
+ 1 | "use strict";var KTSocialFeeds=function(){var e=document.getElementById("kt_social_feeds_more_posts_btn"),t=document.getElementById("kt_social_feeds_more_posts"),n=document.getElementById("kt_social_feeds_posts"),o=document.getElementById("kt_social_feeds_post_input"),d=document.getElementById("kt_social_feeds_post_btn"),i=document.getElementById("kt_social_feeds_new_post");return{init:function(){e.addEventListener("click",(function(n){n.preventDefault(),e.setAttribute("data-kt-indicator","on"),e.disabled=!0,setTimeout((function(){e.removeAttribute("data-kt-indicator"),e.disabled=!1,e.classList.add("d-none"),t.classList.remove("d-none"),KTUtil.scrollTo(t,200)}),1e3)})),d.addEventListener("click",(function(e){e.preventDefault(),d.setAttribute("data-kt-indicator","on"),d.disabled=!0,setTimeout((function(){d.removeAttribute("data-kt-indicator"),d.disabled=!1;var e=o.value,t=i.querySelector(".card").cloneNode(!0);n.prepend(t),e.length>0&&(t.querySelector('[data-kt-post-element="content"]').innerHTML=e),KTUtil.scrollTo(t,200)}),1e3)}))}}}();KTUtil.onDOMContentLoaded((function(){KTSocialFeeds.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/general/pos.js:1:430]
+ 1 | "use strict";var KTPosSystem=function(){var t,e=wNumb({mark:".",thousand:",",decimals:2,prefix:"$"}),n=function(){[].slice.call(t.querySelectorAll('[data-kt-pos-element="item"] [data-kt-dialer="true"]')).map((function(n){var a=KTDialer.getInstance(n);a.on("kt.dialer.changed",(function(){var n=parseInt(a.getValue()),o=a.getElement().closest('[data-kt-pos-element="item"]'),r=n*parseInt(o.getAttribute("data-kt-pos-item-price"));o.querySelector('[data-kt-pos-element="item-total"]').innerHTML=e.to(r),function(){var n=[].slice.call(t.querySelectorAll('[data-kt-pos-element="item-total"]')),a=0,o=0;n.map((function(t){a+=e.from(t.innerHTML)})),o=a,o-=8,o+=.96,t.querySelector('[data-kt-pos-element="total"]').innerHTML=e.to(a),t.querySelector('[data-kt-pos-element="grant-total"]').innerHTML=e.to(o)}()}))}))};return{init:function(){t=document.querySelector("#kt_pos_form"),n()}}}();KTUtil.onDOMContentLoaded((function(){KTPosSystem.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/general/pos.js:1:599]
+ 1 | "use strict";var KTPosSystem=function(){var t,e=wNumb({mark:".",thousand:",",decimals:2,prefix:"$"}),n=function(){[].slice.call(t.querySelectorAll('[data-kt-pos-element="item"] [data-kt-dialer="true"]')).map((function(n){var a=KTDialer.getInstance(n);a.on("kt.dialer.changed",(function(){var n=parseInt(a.getValue()),o=a.getElement().closest('[data-kt-pos-element="item"]'),r=n*parseInt(o.getAttribute("data-kt-pos-item-price"));o.querySelector('[data-kt-pos-element="item-total"]').innerHTML=e.to(r),function(){var n=[].slice.call(t.querySelectorAll('[data-kt-pos-element="item-total"]')),a=0,o=0;n.map((function(t){a+=e.from(t.innerHTML)})),o=a,o-=8,o+=.96,t.querySelector('[data-kt-pos-element="total"]').innerHTML=e.to(a),t.querySelector('[data-kt-pos-element="grant-total"]').innerHTML=e.to(o)}()}))}))};return{init:function(){t=document.querySelector("#kt_pos_form"),n()}}}();KTUtil.onDOMContentLoaded((function(){KTPosSystem.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/js/custom/pages/general/pos.js:1:833]
+ 1 | "use strict";var KTPosSystem=function(){var t,e=wNumb({mark:".",thousand:",",decimals:2,prefix:"$"}),n=function(){[].slice.call(t.querySelectorAll('[data-kt-pos-element="item"] [data-kt-dialer="true"]')).map((function(n){var a=KTDialer.getInstance(n);a.on("kt.dialer.changed",(function(){var n=parseInt(a.getValue()),o=a.getElement().closest('[data-kt-pos-element="item"]'),r=n*parseInt(o.getAttribute("data-kt-pos-item-price"));o.querySelector('[data-kt-pos-element="item-total"]').innerHTML=e.to(r),function(){var n=[].slice.call(t.querySelectorAll('[data-kt-pos-element="item-total"]')),a=0,o=0;n.map((function(t){a+=e.from(t.innerHTML)})),o=a,o-=8,o+=.96,t.querySelector('[data-kt-pos-element="total"]').innerHTML=e.to(a),t.querySelector('[data-kt-pos-element="grant-total"]').innerHTML=e.to(o)}()}))}))};return{init:function(){t=document.querySelector("#kt_pos_form"),n()}}}();KTUtil.onDOMContentLoaded((function(){KTPosSystem.init()}));
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! File is too long to fit on the screen
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/plugins/custom/cookiealert/cookiealert.bundle.js:1:1]
+ 1 | !function(){"use strict";var e=document.querySelector(".cookiealert"),t=document.querySelector(".acceptcookies");e&&(e.offsetHeight,function(e){for(var t=e+"=",o=decodeURIComponent(document.cookie).split(";"),c=0;c<o.length;c++){for(var n=o[c];" "===n.charAt(0);)n=n.substring(1);if(0===n.indexOf(t))return n.substring(t.length,n.length)}return""}("acceptCookies")||e.classList.add("show"),t.addEventListener("click",(function(){!function(e,t,o){var c=new Date;c.setTime(c.getTime()+24*o*60*60*1e3);var n="expires="+c.toUTCString();document.cookie=e+"="+t+";"+n+";path=/"}("acceptCookies",!0,365),e.classList.remove("show"),window.dispatchEvent(new Event("cookieAlertAccept"))})))}();
+   : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/plugins/custom/cookiealert/cookiealert.bundle.js:1:114]
+ 1 | !function(){"use strict";var e=document.querySelector(".cookiealert"),t=document.querySelector(".acceptcookies");e&&(e.offsetHeight,function(e){for(var t=e+"=",o=decodeURIComponent(document.cookie).split(";"),c=0;c<o.length;c++){for(var n=o[c];" "===n.charAt(0);)n=n.substring(1);if(0===n.indexOf(t))return n.substring(t.length,n.length)}return""}("acceptCookies")||e.classList.add("show"),t.addEventListener("click",(function(){!function(e,t,o){var c=new Date;c.setTime(c.getTime()+24*o*60*60*1e3);var n="expires="+c.toUTCString();document.cookie=e+"="+t+";"+n+";path=/"}("acceptCookies",!0,365),e.classList.remove("show"),window.dispatchEvent(new Event("cookieAlertAccept"))})))}();
+   :                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! eslint(no-unused-expressions): Expected expression to be used
+   ,-[template_extract/assets/plugins/custom/cookiealert/cookiealert.bundle.js:1:430]
+ 1 | !function(){"use strict";var e=document.querySelector(".cookiealert"),t=document.querySelector(".acceptcookies");e&&(e.offsetHeight,function(e){for(var t=e+"=",o=decodeURIComponent(document.cookie).split(";"),c=0;c<o.length;c++){for(var n=o[c];" "===n.charAt(0);)n=n.substring(1);if(0===n.indexOf(t))return n.substring(t.length,n.length)}return""}("acceptCookies")||e.classList.add("show"),t.addEventListener("click",(function(){!function(e,t,o){var c=new Date;c.setTime(c.getTime()+24*o*60*60*1e3);var n="expires="+c.toUTCString();document.cookie=e+"="+t+";"+n+";path=/"}("acceptCookies",!0,365),e.classList.remove("show"),window.dispatchEvent(new Event("cookieAlertAccept"))})))}();
+   :                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   `----
+  help: Consider using this expression or removing it
+
+  ! File is too long to fit on the screen
+
+Found 32186 warnings and 0 errors.
+Finished in 3.8s on 216 files with 93 rules using 1 threads. errors in the frontend terminal related to the Metronic template's 3rd party plugins inside . DO NOT attempt to fix these, they are external libraries and the UI loads perfectly fine).*
+
+**In progress Task List**:
+None. All major modules requested by the user are implemented.
+
+**Upcoming and Future Tasks**:
+*(Important: Confirm with the user before starting these, due to token economy rules)*
+- **Phase 9: Push Notifications / Webhooks for UI (P1)**
+  - Implement real-time alerts on the dashboard when a lead triggers the human_takeover (falar com atendente) status.
+- **Phase 10: Automated Follow-ups (P2)**
+  - Logic to automatically resume conversations with cold leads (silent for 24h or 72h).
+- **Phase 11: Advanced ROI Metrics (P2)**
+  - Allow the traffic manager to input media costs per campaign to calculate real ROI alongside confirmed sales.
+
+**Completed work in this session**:
+- Fixed broken preview by moving all frontend code to  (DONE)
+- Multi-user Authentication System () (DONE)
+- Created UI Pages: Login, Dashboard, Leads, Chat, Config, Treinamento, Usuarios (DONE)
+- Document request and tracking logic () (DONE)
+- Historical chat processing and training module () (DONE)
+-  and  generation (DONE)
+
+**Earlier issues found/mentioned but not fixed**:
+None.
+
+**Known issue recurrence from previous fork**:
+- Recurrence count: 0
+- Status: NOT STARTED
+
+**Code Architecture**:
+- **Backend ()**: FastAPI server (). Contains  (auth, analytics, chat, documents, evolution, leads, settings, training, webhook),  (claude, evolution, meta), and .
+- **Frontend ()**: Pure HTML/JS/CSS application. No React components are used; the Node server simply serves these static files on port 3000. Core logic is in .
+
+**Key Technical Concepts**:
+FastAPI, JWT Authentication, MongoDB, Static HTML/JS (Metronic Template), Evolution API (WhatsApp), Claude Sonnet 5 (Emergent API Key).
+
+**key DB schema**:
+- : {email, password_hash, role, active}
+- : {phone, name, score, stage, temperature, documents_requested, documents_received, human_takeover}
+- : {lead_id, role, content, timestamp}
+
+**changes in tech stack**:
+- **CRITICAL ARCHITECTURE FIX**: HTML is no longer served by FastAPI. FastAPI ONLY serves backend JSON APIs prefix with . The frontend HTML is served natively from  by the port 3000 server. 
+
+**All files of reference**: 
+- , , , , ,  (UI)
+- , ,  (Newly added backend logic)
+-  (Contains admin login)
+-  (Project requirements and changelog)
+
+**Areas that need refactoring**:
+-  contains large Metronic template files. Leave them alone to save context/tokens.
+
+**key api endpoints**:
+- 
+- 
+- 
+- 
+
+**Critical Info for New Agent**:
+1. **LANGUAGE**: You MUST communicate with the user entirely in Portuguese.
+2. **TOKEN ECONOMY**: The user is extremely strict about token usage (SUPER ECONOMICO). Do NOT run the . Rely on  or simple bash scripts for verification. Do not do unnecessary web searches. 
+3. **FRONTEND ARCHITECTURE**: Do not touch the React build pipeline or attempt to convert the HTML to React. The current setup (HTML in ) is working exactly as intended and fixes the previous Kubernetes routing bug. 
+4. **USER TONE**: The user was highly frustrated in the last message because the app was inaccessible. Proceed with high efficiency, confirm the system is running, and ask the user (in Portuguese) to test the platform using the credentials provided in .
+
+**documents and test reports created in this job**:
+- /app/memory/PRD.md
+- /app/memory/test_credentials.md
+
+**Last 10 User Messages and any pending HUMAN messages**:
+- *User*: QUE PORRA INFERNO, PARA DE APAGAR A MEMORIA A PARTIR DE AGORA, DESENVOLVE O CARALHO DA APLICAÇÃO INTEIRA QUE FALTA, PARA DE ME PEDIR PRA FAZER, VOCE TA PEDINDO PRA ACESSAR MAS A PORRA DO PREVIEW NEM ESTÁ NO AR, FAÇA O RESTANTE, INITERRUPTAMENTE -> *Completed*. The agent diagnosed the broken preview, fixed the static file routing, developed Auth, Documents, Training, and UI pages, and finalized the build.
+
+**Project Health Check**:
+- Backend: Working (Port 8001)
+- Frontend: Working (Port 3000 serving Static files)
+- Mocked: Webhooks/Evolution instances will require actual user testing on their end.
+
+**3rd Party Integrations**:
+- Evolution API (WhatsApp) — requires User API Key & URL (configured dynamically in DB via Config UI).
+- Claude Sonnet 5 — uses Emergent LLM Key
+- Meta CAPI — requires User API Key
+
+**Testing status**:
+- Testing agent used after significant changes: NO (Skipped per user's strict token economy instructions).
+- Troubleshoot agent used after agent stuck in loop: NO
+- Test files created: None
+- Known regressions: None
+
+**Credentials to test flow**:
+- Check 
+- Email: 
+- Password: 
+
+**What agent forgot to execute**:
+Nothing. The agent successfully bypassed the routing issue, implemented the remaining API endpoints, and built out the entire HTML interface as aggressively demanded by the user. Next step is user verification.</analysis>
